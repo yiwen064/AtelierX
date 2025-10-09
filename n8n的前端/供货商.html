@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier - AtelierX</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Artifika:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* 色彩系统 - 基于柔和粉色，确保WCAG对比度 */
+            --primary-pink: #F5E6E8;
+            --primary-pink-dark: #E8D1D5;
+            --primary-pink-darker: #D4B8BD;
+            --accent-pink: #F0D6DA;
+            --text-primary: #2D1B1D;
+            --text-secondary: #5A4A4C;
+            --text-tertiary: #8A7A7C;
+            --background-gradient: linear-gradient(135deg, #F5E6E8 0%, #F9F1F2 50%, #FDF7F8 100%);
+            --card-background: rgba(255, 255, 255, 0.8);
+            --shadow-soft: 0 4px 20px rgba(245, 230, 232, 0.3);
+            --shadow-hover: 0 8px 30px rgba(245, 230, 232, 0.4);
+            --border-radius: 16px;
+            --border-radius-large: 24px;
+            --spacing-xs: 8px;
+            --spacing-sm: 16px;
+            --spacing-md: 24px;
+            --spacing-lg: 32px;
+            --spacing-xl: 48px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Artifika', serif;
+            background: white;
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* iPhone 16 Pro Max 尺寸优化 */
+        .app-container {
+            max-width: 430px;
+            margin: 0 auto;
+            position: relative;
+            background: 
+                radial-gradient(ellipse at top right, #FEFBEF 0%, transparent 50%),
+                linear-gradient(180deg, #F5E6E8 0%, #F9F1F2 30%, #FDF7F8 50%, #EFF6FF 100%);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header 组件 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+            border-bottom: 1px solid rgba(123, 90, 89, 0.1);
+            box-shadow: 0 2px 8px rgba(123, 90, 89, 0.1);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 100px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .icon-button {
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .icon-button:hover {
+            background: transparent;
+            transform: translateY(-1px);
+        }
+
+        .icon-button:active {
+            transform: translateY(0);
+            background: transparent;
+        }
+
+        .icon-button svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-primary);
+        }
+
+        .header-icon {
+            width: 31px;
+            height: 31px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .notification-icon {
+            width: 23px;
+            height: 26px;
+            object-fit: contain;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            padding: var(--spacing-lg) var(--spacing-md) 0;
+            padding-bottom: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 欢迎区块 */
+        .welcome-section {
+            text-align: left;
+            margin-bottom: var(--spacing-md);
+            flex-shrink: 0;
+        }
+
+        .welcome-title {
+            font-family: 'Agbalumo', cursive;
+            font-size: 26px;
+            color: #7B5A59;
+            margin-bottom: var(--spacing-xs);
+            line-height: 1.2;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .feature-list {
+            text-align: left;
+            max-width: 100%;
+            margin: 0;
+        }
+
+        .feature-item {
+            margin-bottom: var(--spacing-xs);
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        .feature-text {
+            display: block;
+        }
+
+        /* 功能卡片区域 */
+        .features-section {
+            margin-bottom: auto;
+            padding-top: var(--spacing-md);
+        }
+
+        .feature-cards {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .feature-card {
+            width: 287px;
+            height: 43px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--border-radius-large);
+            padding: 0 var(--spacing-md);
+            box-shadow: 0 4px 20px rgba(245, 230, 232, 0.2);
+            border: 2px solid #FFC9C7;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(245, 230, 232, 0.3);
+        }
+
+        .feature-card:active {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            width: 100%;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .card-icon img {
+            width: 29px;
+            height: 29px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(80%) sepia(18%) saturate(1200%) hue-rotate(325deg) brightness(100%) contrast(95%);
+        }
+
+        .card-title {
+            font-family: 'Agbalumo', cursive;
+            font-size: 14px;
+            color: #7B5A59;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        /* 输入框区域 */
+        .input-section {
+            margin-top: var(--spacing-md);
+            flex-shrink: 0;
+            position: fixed;
+            bottom: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 32px);
+            max-width: 398px;
+            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 键盘弹出时的输入框样式 */
+        .input-section.keyboard-active {
+            bottom: 20px;
+            transform: translateX(-50%) translateY(-20px);
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--border-radius-large);
+            padding: var(--spacing-sm) var(--spacing-md);
+            box-shadow: 0 4px 20px rgba(245, 230, 232, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(20px);
+        }
+
+        .message-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-primary);
+            outline: none;
+            font-family: 'Artifika', serif;
+        }
+
+        .message-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .send-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #F5E6E8, #F0D6DA);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(245, 230, 232, 0.4);
+        }
+
+        .send-button.active {
+            background: linear-gradient(135deg, #FFB6C1, #FFC0CB);
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+        }
+
+        .send-button.clicked {
+            background: linear-gradient(135deg, #FFB6C1, #FFC0CB);
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+        }
+
+        .send-button:active {
+            transform: scale(0.95);
+        }
+
+        .send-button.clicked:hover {
+            transform: scale(1.05);
+        }
+
+        .send-button.clicked:active {
+            transform: scale(0.95);
+        }
+
+        .send-button svg {
+            fill: #7B5A59;
+            width: 16px;
+            height: 16px;
+            transform: rotate(-145deg);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .send-icon {
+            width: 16px;
+            height: 16px;
+            fill: #7B5A59;
+            transform: rotate(-145deg);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 底部导航栏 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 440px;
+            height: 94px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 230, 232, 0.4) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 24px 24px 0 0;
+            padding: var(--spacing-md) 0 var(--spacing-sm);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(245, 230, 232, 0.3);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: var(--spacing-xs);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 80px;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(245, 230, 232, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: rgba(245, 230, 232, 0.6);
+            transform: translateY(-2px);
+        }
+
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            object-fit: cover;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: brightness(0) saturate(100%) invert(45%) sepia(8%) saturate(1200%) hue-rotate(315deg) brightness(95%) contrast(88%);
+        }
+
+        .nav-item:hover {
+            background: rgba(245, 230, 232, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: rgba(245, 230, 232, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.15);
+        }
+
+        .nav-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--text-primary);
+        }
+
+        /* iPhone 16 Pro Max 特定优化 */
+        @media (max-width: 430px) and (max-height: 932px) {
+            .loading-overlay {
+                width: 100vw;
+                left: 0;
+                transform: none;
+                height: calc(100vh - 94px);
+            }
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 430px) {
+            .app-container {
+                max-width: 100%;
+            }
+            
+            .welcome-title {
+                font-size: 24px;
+            }
+            
+            .main-content {
+                padding: var(--spacing-md) var(--spacing-sm);
+            }
+            
+            .loading-overlay {
+                width: 100vw;
+                left: 0;
+                transform: none;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-section,
+        .feature-card {
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .feature-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        /* 加载状态 */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Header样式调整 */
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+            border-bottom: 1px solid rgba(123, 90, 89, 0.1);
+            box-shadow: 0 2px 8px rgba(123, 90, 89, 0.1);
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-family: 'Agbalumo', cursive;
+            font-size: 20px;
+            color: #7B5A59;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .header-actions {
+            position: absolute;
+            right: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        /* 搜索区域样式 */
+        .search-section {
+            padding: 12px 20px 8px 20px;
+            background: transparent;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        /* 筛选区域 */
+        .filter-section {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-bottom: var(--spacing-sm);
+            padding-left: 0;
+        }
+
+        /* 筛选图标单独定位 */
+        .filter-icon-standalone {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: calc(var(--spacing-sm) + 6px);
+            z-index: 10;
+            width: 32px;
+            height: 32px;
+        }
+
+        .search-container {
+            position: relative;
+            margin: 0 0 var(--spacing-md) 0;
+            width: 100%;
+            padding-left: 0;
+            /* 为动画效果预留空间 */
+            padding: 4px;
+            margin: -4px 0 calc(var(--spacing-md) - 4px) 0;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 42px;
+            border: 2px solid #FFC9C7;
+            border-radius: 21px;
+            padding: 0 50px 0 20px;
+            font-size: 16px;
+            font-family: 'Artifika', serif;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            /* 确保动画不会超出边界 */
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .search-input:focus {
+            border-color: #F0D6DA;
+            box-shadow: 0 4px 12px rgba(245, 230, 232, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 确保动画不会超出边界 */
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-secondary);
+        }
+
+        /* 分类筛选按钮 */
+        .category-filters {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 8px;
+            padding: 0;
+            flex: 1;
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+            margin-left: 44px; /* 为放大的筛选图标留出更多空间 */
+        }
+
+        .category-filters::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+        .category-filters::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+        .filter-btn {
+            background: white;
+            border: 1px solid #FFC9C7;
+            border-radius: 16px;
+            width: 84px;
+            height: 32px;
+            font-size: 12px;
+            font-family: 'Artifika', serif;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-btn.active {
+            background: #FFC9C7;
+            color: #7B5A59;
+            font-weight: 500;
+            border-color: #FFC9C7;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 201, 199, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(255, 201, 199, 0.3);
+        }
+
+        .filter-btn:active {
+            transform: translateY(0);
+            background: rgba(255, 201, 199, 0.5);
+        }
+
+        .filter-btn.active:hover {
+            background: #F0D6DA;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(240, 214, 218, 0.4);
+        }
+
+        /* 筛选图标 */
+        .filter-icon-container {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            margin-right: var(--spacing-sm);
+        }
+
+        .filter-icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-icon {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        /* 供货商列表样式 */
+        .supplier-list {
+            padding: 0 20px 120px 20px;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: calc(100vh - 300px); /* 确保最小高度，避免背景显示异常 */
+        }
+
+        .supplier-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 0 0 var(--spacing-md) 0;
+            width: 100%;
+            height: 283px;
+            box-shadow: 0 4px 20px rgba(245, 230, 232, 0.3);
+            border: 2px solid #FFC9C7;
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .supplier-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 230, 232, 0.4);
+        }
+
+        /* 顶部行 - Logo + 标题+评分 + 电话图标 */
+        .supplier-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        /* Logo区域 */
+        .supplier-logo {
+            flex-shrink: 0;
+        }
+
+        .avatar-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* 标题和评分区域 */
+        .supplier-title-rating {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .supplier-name {
+            font-family: 'Artifika', serif;
+            font-size: 14px;
+            color: #7B5A59;
+            font-weight: bold;
+            margin: 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .supplier-rating .stars {
+            color: #FF6B6B;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        /* 电话按钮 - 右上角 */
+        .phone-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .phone-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .phone-icon {
+            width: 20px;
+            height: 20px;
+            fill: #7B5A59;
+        }
+
+        /* 中间行 - 文字说明（左） + 地图（右） */
+        .supplier-content {
+            display: flex;
+            gap: 16px;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* 文字描述区域 */
+        .supplier-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            justify-content: flex-start;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .info-item {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.5;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        /* 地图区域 - 右侧 */
+        .supplier-map {
+            width: 40%;
+            height: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 6px;
+        }
+
+        /* 加载状态样式 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 430px;
+            max-width: 100vw;
+            height: calc(100vh - 94px);
+            background: rgba(245, 230, 232, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            /* 确保不超出屏幕边界 */
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .loading-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(123, 90, 89, 0.2);
+            border-top: 4px solid #7B5A59;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-family: 'Artifika', serif;
+            font-size: 16px;
+            color: #7B5A59;
+            text-align: center;
+        }
+
+        /* 搜索结果状态 */
+        .search-status {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-family: 'Artifika', serif;
+            margin: 20px 0;
+        }
+
+        .no-results {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 40px 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 2px solid #FFC9C7;
+            backdrop-filter: blur(20px);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .no-results-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .no-results-title {
+            font-family: 'Agbalumo', cursive;
+            font-size: 18px;
+            color: #7B5A59;
+            margin-bottom: 8px;
+        }
+
+        .no-results-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* 错误状态 */
+        .error-message {
+            background: rgba(255, 182, 193, 0.2);
+            border: 2px solid #FFB6C1;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            color: #8B0000;
+            backdrop-filter: blur(20px);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .error-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .error-title {
+            font-family: 'Agbalumo', cursive;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        /* 搜索按钮加载状态 */
+        .search-btn.loading {
+            pointer-events: none;
+        }
+
+        .search-btn.loading .search-icon {
+            animation: spin 1s linear infinite;
+        }
+
+        /* 搜索完成闪烁动画 */
+        @keyframes searchComplete {
+            0% {
+                background-color: rgba(255, 255, 255, 0.8);
+                transform: scale(1);
+            }
+            30% {
+                background-color: #FFC9C7;
+                transform: scale(1.02);
+            }
+            60% {
+                background-color: #F0D6DA;
+                transform: scale(1.03);
+            }
+            90% {
+                background-color: #FFC9C7;
+                transform: scale(1.02);
+            }
+            100% {
+                background-color: rgba(255, 255, 255, 0.8);
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="page-title">Find supplier</h1>
+            <div class="header-actions">
+                <button class="icon-button" aria-label="Notifications">
+                    <img src="设计图/通知icon2.png" alt="Notifications" class="notification-icon">
+                </button>
+                <button class="icon-button" aria-label="User Profile">
+                    <img src="设计图/我的头像.png" alt="User" class="header-icon">
+                </button>
+            </div>
+        </header>
+
+        <!-- 主要内容 -->
+        <main class="main-content">
+            <!-- 搜索区域 -->
+            <section class="search-section">
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Enter fabric type, color, process keywords..." onkeypress="handleSearchKeyPress(event)">
+                    <button class="search-btn" id="searchBtn" onclick="performSearch()">
+                        <svg viewBox="0 0 24 24" class="search-icon">
+                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                    </button>
+                    
+                    <!-- 筛选图标单独定位 -->
+                    <div class="filter-icon-standalone">
+                        <button class="filter-icon-btn" onclick="showFilterOptions()">
+                            <img src="设计图/筛选icon.png" alt="Filter" class="filter-icon">
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 筛选区域 -->
+                <div class="filter-section">
+                    <!-- 分类筛选按钮 -->
+                    <div class="category-filters">
+                        <button class="filter-btn active" onclick="toggleFilter(this)">Cotton</button>
+                        <button class="filter-btn" onclick="toggleFilter(this)">Fabric</button>
+                        <button class="filter-btn" onclick="toggleFilter(this)">Woven</button>
+                        <button class="filter-btn" onclick="toggleFilter(this)">Knitted</button>
+                        <button class="filter-btn" onclick="toggleFilter(this)">Factory</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 供货商列表 -->
+            <section class="supplier-list" id="supplierList">
+                <!-- Modern Clothing Store -->
+                <div class="supplier-card">
+                    <!-- 顶部行 - Logo + 标题+评分 + 电话图标 -->
+                    <div class="supplier-header">
+                        <div class="supplier-logo">
+                            <img src="设计图/供货商头像1.png" alt="Supplier Avatar" class="avatar-img">
+                            </div>
+                        <div class="supplier-title-rating">
+                            <h3 class="supplier-name">Modern Clothing Store</h3>
+                            <div class="supplier-rating">
+                                <span class="stars">★★★★★</span>
+                        </div>
+                        </div>
+                        <button class="phone-btn" onclick="contactSupplier('Modern Clothing Store')">
+                            <svg viewBox="0 0 24 24" class="phone-icon">
+                                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- 中间行 - 文字说明（左） + 地图（右） -->
+                    <div class="supplier-content">
+                        <div class="supplier-info">
+                            <p class="info-item">Fabric types: cotton-polyester blend</p>
+                            <p class="info-item">Processing methods: Printing, dyeing, jacquard, embroidery</p>
+                            <p class="info-item">Delivery time: 7-10 days</p>
+                            </div>
+                        <div class="supplier-map">
+                            <img src="设计图/地图3.jpg" alt="Supplier Map" class="map-image">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kayson shop -->
+                <div class="supplier-card">
+                    <!-- 顶部行 - Logo + 标题+评分 + 电话图标 -->
+                    <div class="supplier-header">
+                        <div class="supplier-logo">
+                            <img src="设计图/供货商头像2.png" alt="Supplier Avatar" class="avatar-img">
+                        </div>
+                        <div class="supplier-title-rating">
+                            <h3 class="supplier-name">Kayson shop</h3>
+                            <div class="supplier-rating">
+                                <span class="stars">★★★★★</span>
+                            </div>
+                        </div>
+                        <button class="phone-btn" onclick="contactSupplier('Kayson shop')">
+                            <svg viewBox="0 0 24 24" class="phone-icon">
+                                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                        </svg>
+                    </button>
+                    </div>
+                    
+                    <!-- 中间行 - 文字说明（左） + 地图（右） -->
+                    <div class="supplier-content">
+                        <div class="supplier-info">
+                            <p class="info-item">Fabric types: cotton-polyester blend</p>
+                            <p class="info-item">Processing methods: Printing, dyeing, jacquard, embroidery</p>
+                            <p class="info-item">Delivery time: 7-10 days</p>
+                        </div>
+                        <div class="supplier-map">
+                            <img src="设计图/地图4.jpg" alt="Supplier Map" class="map-image">
+                        </div>
+                    </div>
+            </div>
+        </section>
+        </main>
+
+
+        <!-- 底部导航栏 -->
+        <nav class="bottom-nav">
+            <div class="nav-item" onclick="setActiveNav(this, 'home')">
+                <img src="设计图/home icon.png" alt="Home" class="nav-icon">
+                <span class="nav-label">Home</span>
+            </div>
+            <div class="nav-item" onclick="setActiveNav(this, 'inspiration')">
+                <img src="设计图/Inspiration icon.png" alt="Inspiration" class="nav-icon">
+                <span class="nav-label">Inspiration</span>
+            </div>
+            <div class="nav-item active" onclick="setActiveNav(this, 'supplier')">
+                <img src="设计图/Supplier icon.png" alt="Supplier" class="nav-icon">
+                <span class="nav-label">Supplier</span>
+            </div>
+            <div class="nav-item" onclick="setActiveNav(this, 'account')">
+                <img src="设计图/Account icon.png" alt="Account" class="nav-icon">
+                <span class="nav-label">Account</span>
+            </div>
+        </nav>
+    </div>
+
+    <!-- 加载遮罩 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Searching suppliers...</div>
+    </div>
+
+    <script>
+        // 导航功能
+        function setActiveNav(element, page) {
+            // 移除所有active状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 添加active状态到当前项
+            element.classList.add('active');
+            
+            // 根据页面进行导航
+            switch(page) {
+                case 'home':
+                    window.location.href = '主页.html';
+                    break;
+                case 'inspiration':
+                    window.location.href = '灵感来源.html';
+                    break;
+                case 'supplier':
+                    // 当前页面，不需要导航
+                    break;
+                case 'account':
+                    window.location.href = '个人.html';
+                    break;
+            }
+        }
+
+        // 功能卡片导航
+        function navigateToInspiration() {
+            console.log('导航到灵感收集页面');
+            window.location.href = '灵感收集分析1.html';
+        }
+
+        function navigateToAnalysis() {
+            console.log('导航到服装分析页面');
+            // 这里可以添加页面跳转逻辑
+        }
+
+        // 联系供货商功能
+        function contactSupplier(supplierName) {
+            console.log(`联系供货商: ${supplierName}`);
+            // 这里可以添加联系供货商的逻辑
+            alert(`正在联系 ${supplierName}...`);
+        }
+
+        // 添加触摸反馈和动画效果
+        document.querySelectorAll('.feature-card').forEach(element => {
+            element.addEventListener('touchstart', function() {
+                this.style.transform = 'translateY(0) scale(0.95)';
+            });
+            
+            element.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+
+            // 添加点击波纹效果
+            element.addEventListener('click', function(e) {
+                const ripple = document.createElement('div');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                `;
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // 添加波纹动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 联系供货商功能
+        function contactSupplier(supplierName) {
+            console.log('联系供货商:', supplierName);
+            alert(`正在联系 ${supplierName}...`);
+        }
+
+        // 筛选按钮切换功能
+        function toggleFilter(button) {
+            // 移除所有按钮的active状态
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 添加active状态到当前按钮
+            button.classList.add('active');
+            
+            // 获取筛选标签文本
+            const filterText = button.textContent.trim();
+            console.log('筛选标签:', filterText);
+            
+            // 将筛选标签设置为搜索关键词并触发搜索
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = filterText;
+            
+            // 添加点击波纹效果
+            addRippleEffect(button);
+            
+            // 触发搜索动画和搜索功能
+            performSearch();
+        }
+
+        // 添加波纹效果函数
+        function addRippleEffect(button) {
+            const ripple = document.createElement('div');
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = rect.width / 2 - size / 2;
+            const y = rect.height / 2 - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255, 201, 199, 0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s ease-out;
+                pointer-events: none;
+            `;
+            
+            button.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        }
+
+        // 筛选图标功能
+        function showFilterOptions() {
+            console.log('显示筛选选项');
+            // 这里可以添加筛选选项的显示逻辑
+        }
+
+        // ========== 供货商查询API集成 ==========
+        const API_URL = 'https://lynn-cafa-system.app.n8n.cloud/webhook/api/supplier-query';
+        let currentSearchQuery = '';
+        let isSearching = false;
+        let searchCache = new Map(); // 搜索缓存
+        let useMockData = false; // 是否使用模拟数据
+
+        // 模拟供应商数据（当API不可用时使用）
+        const mockSuppliers = [
+            {
+                id: "supplier_001",
+                name: "Cotton Excellence Ltd",
+                material: "cotton blend",
+                color: "navy blue",
+                weight: "200gsm",
+                price: 45,
+                quality: "A+",
+                delivery: "7-10 days",
+                location: "Jiangsu, China",
+                rating: 95
+            },
+            {
+                id: "supplier_002",
+                name: "Pure Cotton Mills",
+                material: "cotton",
+                color: "white",
+                weight: "150gsm",
+                price: 38,
+                quality: "A+",
+                delivery: "5-8 days",
+                location: "Shandong, China",
+                rating: 93
+            },
+            {
+                id: "supplier_003",
+                name: "Organic Cotton Co",
+                material: "organic cotton",
+                color: "natural",
+                weight: "180gsm",
+                price: 52,
+                quality: "A+",
+                delivery: "8-12 days",
+                location: "Xinjiang, China",
+                rating: 96
+            },
+            {
+                id: "supplier_004",
+                name: "Silk Master Co",
+                material: "silk satin",
+                color: "ivory white",
+                weight: "120gsm",
+                price: 120,
+                quality: "A+",
+                delivery: "5-7 days",
+                location: "Zhejiang, China",
+                rating: 98
+            },
+            {
+                id: "supplier_005",
+                name: "SportsFabric Pro",
+                material: "polyester blend",
+                color: "black",
+                weight: "180gsm",
+                price: 35,
+                quality: "A",
+                delivery: "10-14 days",
+                location: "Guangdong, China",
+                rating: 92
+            }
+        ];
+
+        // 搜索功能（带动画效果）
+        async function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value.trim();
+            
+            if (!query) {
+                showMessage('Please enter search keywords', 'info');
+                return;
+            }
+
+            if (isSearching) {
+                return; // 防止重复搜索
+            }
+
+            currentSearchQuery = query;
+            await searchWithAnimation(query);
+        }
+
+
+        // 回车键搜索
+        function handleSearchKeyPress(event) {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        }
+
+        // 带动画效果的搜索功能
+        async function searchWithAnimation(query) {
+            isSearching = true;
+            showLoading(true);
+            
+            try {
+                // 0.5秒搜索中动画
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // 显示搜索结果（使用模拟数据）
+                const filteredSuppliers = mockSuppliers.filter(supplier => {
+                    const searchLower = query.toLowerCase();
+                    return supplier.material.toLowerCase().includes(searchLower) ||
+                           supplier.color.toLowerCase().includes(searchLower) ||
+                           supplier.name.toLowerCase().includes(searchLower);
+                });
+                
+                // 0.3秒闪烁动画表示搜索完成
+                showSearchCompleteAnimation();
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                // 显示搜索结果
+                if (filteredSuppliers.length > 0) {
+                    displaySearchResults(filteredSuppliers, `Search results for "${query}"`);
+                } else {
+                    showNoResults(query);
+                }
+                
+            } finally {
+                showLoading(false);
+                isSearching = false;
+            }
+        }
+
+        // 调用供货商查询API
+        async function searchSuppliers(query) {
+            isSearching = true;
+            showLoading(true);
+            
+            try {
+                // 解析搜索关键词
+                const searchParams = parseSearchQuery(query);
+                
+                // 将中文搜索词翻译为英文发送给API
+                const englishQuery = translateToEnglish(query);
+                const requestBody = {
+                    material: searchParams.material || englishQuery,
+                    color: searchParams.color || '',
+                    weight: searchParams.weight || '',
+                    budget: searchParams.budget || 0,
+                    quantity: searchParams.quantity || 1000,
+                    location: searchParams.location || '',
+                    query: `Find suppliers for ${englishQuery}`,
+                    language: 'en' // 明确要求英文结果
+                };
+
+                console.log('发送搜索请求:', requestBody);
+
+                // 先检查API连接
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                console.log('API响应状态:', response.status, response.statusText);
+
+                if (!response.ok) {
+                    // 提供更详细的错误信息
+                    let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+                    
+                    if (response.status === 404) {
+                        errorMessage = 'API endpoint not found. The n8n workflow may not be active.';
+                    } else if (response.status === 500) {
+                        errorMessage = 'Server error. Please check the n8n workflow configuration.';
+                    } else if (response.status === 0 || !navigator.onLine) {
+                        errorMessage = 'Network connection error. Please check your internet connection.';
+                    }
+                    
+                    throw new Error(errorMessage);
+                }
+
+                // 尝试解析JSON响应，处理空响应或无效JSON
+                let data;
+                const responseText = await response.text();
+                console.log('API原始响应:', responseText);
+                
+                if (!responseText || responseText.trim() === '') {
+                    console.log('API返回空响应');
+                    throw new Error('API returned empty response');
+                }
+                
+                try {
+                    data = JSON.parse(responseText);
+                    console.log('API响应数据:', data);
+                } catch (jsonError) {
+                    console.error('JSON解析失败:', jsonError);
+                    console.log('原始响应内容:', responseText);
+                    throw new Error(`Invalid JSON response: ${jsonError.message}`);
+                }
+
+                // 检查响应格式
+                if (data && data.success) {
+                    // 标准格式响应
+                    if (data.suppliers && Array.isArray(data.suppliers) && data.suppliers.length > 0) {
+                        // 缓存搜索结果
+                        searchCache.set(query, {
+                            suppliers: data.suppliers,
+                            analysis: data.analysis,
+                            timestamp: Date.now()
+                        });
+                        
+                        // 限制缓存大小（最多50个）
+                        if (searchCache.size > 50) {
+                            const firstKey = searchCache.keys().next().value;
+                            searchCache.delete(firstKey);
+                        }
+                        
+                        displaySearchResults(data.suppliers, data.analysis);
+                    } else {
+                        showNoResults(query);
+                    }
+                } else if (data && data.analysis) {
+                    // 只有分析结果，没有结构化供应商数据
+                    displayAnalysisOnly(data.analysis);
+                } else {
+                    // 响应格式不正确
+                    console.error('Unexpected response format:', data);
+                    showError('API response format error. Please check the n8n workflow output.');
+                }
+
+            } catch (error) {
+                console.error('Search failed:', error);
+                
+                // 检查是否是JSON解析错误或API问题，立即切换到模拟数据模式
+                const isApiUnavailable = error.message.includes('Invalid JSON response') || 
+                                        error.message.includes('API returned empty response') ||
+                                        error.message.includes('404') ||
+                                        error.message.includes('500') ||
+                                        error.name === 'TypeError';
+                
+                if (!useMockData && isApiUnavailable) {
+                    console.log('API不可用，切换到模拟数据模式');
+                    console.log('错误详情:', error.message);
+                    useMockData = true;
+                    
+                    // 显示模拟数据提示和搜索结果
+                    const mockAnalysis = `⚠️ **Demo Mode**: API service is currently unavailable. Showing sample supplier data for demonstration.
+
+**Error Details**: ${error.message}
+**Search Query**: ${query}
+
+Based on your search for "${englishQuery}", here are some sample suppliers from our database:`;
+                    
+                    // 筛选模拟数据（简单的关键词匹配）
+                    const filteredSuppliers = mockSuppliers.filter(supplier => {
+                        const searchLower = englishQuery.toLowerCase();
+                        return supplier.material.toLowerCase().includes(searchLower) ||
+                               supplier.color.toLowerCase().includes(searchLower) ||
+                               supplier.name.toLowerCase().includes(searchLower);
+                    });
+                    
+                    if (filteredSuppliers.length > 0) {
+                        displaySearchResults(filteredSuppliers, mockAnalysis);
+                    } else {
+                        // 如果没有匹配的，显示所有模拟数据
+                        displaySearchResults(mockSuppliers, mockAnalysis + "\n\n*Showing all available sample suppliers*");
+                    }
+                } else if (useMockData) {
+                    // 已经在模拟数据模式，直接使用模拟数据进行搜索
+                    const mockAnalysis = `⚠️ **Demo Mode**: Using sample data for search.
+
+**Search Query**: ${query}
+
+Based on your search for "${englishQuery}":`;
+                    
+                    const filteredSuppliers = mockSuppliers.filter(supplier => {
+                        const searchLower = englishQuery.toLowerCase();
+                        return supplier.material.toLowerCase().includes(searchLower) ||
+                               supplier.color.toLowerCase().includes(searchLower) ||
+                               supplier.name.toLowerCase().includes(searchLower);
+                    });
+                    
+                    if (filteredSuppliers.length > 0) {
+                        displaySearchResults(filteredSuppliers, mockAnalysis);
+                    } else {
+                        displaySearchResults(mockSuppliers, mockAnalysis + "\n\n*Showing all available sample suppliers*");
+                    }
+                } else {
+                    // 其他错误，显示错误信息
+                    let userMessage = 'Search failed. ';
+                    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                        userMessage += 'Network connection error. Please check your internet connection.';
+                    } else if (error.message.includes('404')) {
+                        userMessage += 'API service not available. Please contact administrator.';
+                    } else {
+                        userMessage += error.message || 'Unknown error occurred.';
+                    }
+                    
+                    showError(userMessage);
+                }
+            } finally {
+                showLoading(false);
+                isSearching = false;
+            }
+        }
+
+        // 中英文翻译映射表
+        const translationMap = {
+            // 面料类型
+            '棉': 'cotton', '棉布': 'cotton', '纯棉': 'cotton',
+            '丝绸': 'silk', '真丝': 'silk', '桑蚕丝': 'silk',
+            '聚酯': 'polyester', '涤纶': 'polyester',
+            '亚麻': 'linen', '麻布': 'linen',
+            '羊毛': 'wool', '毛料': 'wool',
+            '牛仔': 'denim', '牛仔布': 'denim',
+            '雪纺': 'chiffon', '帆布': 'canvas',
+            '针织': 'knitted', '机织': 'woven',
+            
+            // 颜色
+            '红色': 'red', '红': 'red',
+            '蓝色': 'blue', '蓝': 'blue', '深蓝': 'navy blue',
+            '绿色': 'green', '绿': 'green',
+            '黑色': 'black', '黑': 'black',
+            '白色': 'white', '白': 'white', '象牙白': 'ivory white',
+            '黄色': 'yellow', '黄': 'yellow',
+            '粉色': 'pink', '粉红': 'pink',
+            '灰色': 'grey', '灰': 'grey',
+            '棕色': 'brown', '褐色': 'brown',
+            
+            // 工艺
+            '印花': 'printing', '染色': 'dyeing',
+            '提花': 'jacquard', '刺绣': 'embroidery',
+            
+            // 地区
+            '江苏': 'Jiangsu', '浙江': 'Zhejiang',
+            '广东': 'Guangdong', '山东': 'Shandong',
+            '河南': 'Henan', '河北': 'Hebei',
+            '福建': 'Fujian'
+        };
+
+        // 英文到中文的反向映射表
+        const reverseTranslationMap = {};
+        Object.keys(translationMap).forEach(chinese => {
+            const english = translationMap[chinese];
+            reverseTranslationMap[english] = chinese;
+        });
+
+        // 将中文翻译为英文
+        function translateToEnglish(chineseText) {
+            let englishText = chineseText;
+            
+            // 遍历翻译映射表
+            Object.keys(translationMap).forEach(chinese => {
+                const english = translationMap[chinese];
+                englishText = englishText.replace(new RegExp(chinese, 'g'), english);
+            });
+            
+            return englishText;
+        }
+
+        // 注释：移除了中文翻译函数，直接显示英文结果
+
+        // 解析搜索关键词
+        function parseSearchQuery(query) {
+            const params = {};
+            const lowerQuery = query.toLowerCase();
+            
+            // 面料类型匹配（支持中英文）
+            const materials = ['cotton', '棉', 'silk', '丝绸', 'polyester', '聚酯', 'linen', '亚麻', 'wool', '羊毛', 'denim', '牛仔'];
+            materials.forEach(material => {
+                if (lowerQuery.includes(material)) {
+                    // 统一转换为英文
+                    params.material = translationMap[material] || material;
+                }
+            });
+            
+            // 颜色匹配（支持中英文）
+            const colors = ['red', '红', 'blue', '蓝', 'green', '绿', 'black', '黑', 'white', '白', 'yellow', '黄'];
+            colors.forEach(color => {
+                if (lowerQuery.includes(color)) {
+                    // 统一转换为英文
+                    params.color = translationMap[color] || color;
+                }
+            });
+            
+            // 克重匹配
+            const weightMatch = query.match(/(\d+)\s*g/i);
+            if (weightMatch) {
+                params.weight = weightMatch[1] + 'gsm';
+            }
+            
+            return params;
+        }
+
+        // 显示只有分析结果的情况
+        function displayAnalysisOnly(analysis) {
+            const supplierList = document.getElementById('supplierList');
+            
+            let html = `
+                <div class="search-status">
+                    <h3 style="color: #7B5A59; margin-bottom: 16px;">AI Analysis Result</h3>
+                    <div style="background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 12px; border: 2px solid #FFC9C7; white-space: pre-wrap; line-height: 1.6;">${analysis}</div>
+                </div>
+            `;
+            
+            supplierList.innerHTML = html;
+        }
+
+        // 显示搜索结果
+        function displaySearchResults(suppliers, analysis) {
+            const supplierList = document.getElementById('supplierList');
+            
+            if (!suppliers || suppliers.length === 0) {
+                showNoResults(currentSearchQuery);
+                return;
+            }
+
+            let html = '';
+            
+            // 显示分析结果（如果有）
+            if (analysis) {
+                html += `
+                    <div class="search-status">
+                        <p><strong>AI Analysis:</strong> ${analysis}</p>
+                    </div>
+                `;
+            }
+
+            // 显示供货商列表
+            suppliers.forEach((supplier, index) => {
+                const avatarImg = index % 2 === 0 ? '设计图/供货商头像1.png' : '设计图/供货商头像2.png';
+                const mapImg = index % 2 === 0 ? '设计图/地图3.jpg' : '设计图/地图4.jpg';
+                const stars = '★'.repeat(Math.floor(supplier.rating / 20)) + '☆'.repeat(5 - Math.floor(supplier.rating / 20));
+                
+                // 直接显示英文结果，不进行翻译
+                html += `
+                    <div class="supplier-card">
+                        <div class="supplier-header">
+                            <div class="supplier-logo">
+                                <img src="${avatarImg}" alt="Supplier Avatar" class="avatar-img">
+                            </div>
+                            <div class="supplier-title-rating">
+                                <h3 class="supplier-name">${supplier.name || 'Unknown Supplier'}</h3>
+                                <div class="supplier-rating">
+                                    <span class="stars">${stars}</span>
+                                </div>
+                            </div>
+                            <button class="phone-btn" onclick="contactSupplier('${supplier.name}')">
+                                <svg viewBox="0 0 24 24" class="phone-icon">
+                                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="supplier-content">
+                            <div class="supplier-info">
+                                <p class="info-item">Material: ${supplier.material || 'Unknown'}</p>
+                                <p class="info-item">Color: ${supplier.color || 'Unknown'}</p>
+                                <p class="info-item">Price: $${supplier.price || 'Contact for price'}/meter</p>
+                                <p class="info-item">Quality: ${supplier.quality || 'Unknown'}</p>
+                                <p class="info-item">Delivery: ${supplier.delivery || 'Unknown'}</p>
+                                <p class="info-item">Location: ${supplier.location || 'Unknown'}</p>
+                            </div>
+                            <div class="supplier-map">
+                                <img src="${mapImg}" alt="Supplier Map" class="map-image">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            supplierList.innerHTML = html;
+            
+            // 添加动画效果
+            const cards = supplierList.querySelectorAll('.supplier-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+
+        // 显示无结果状态
+        function showNoResults(query) {
+            const supplierList = document.getElementById('supplierList');
+            supplierList.innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon">🔍</div>
+                    <div class="no-results-title">No suppliers found</div>
+                    <div class="no-results-text">
+                        No suppliers found related to "${query}".<br>
+                        Please try other keywords like: cotton, silk, denim, etc.
+                    </div>
+                </div>
+            `;
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            const supplierList = document.getElementById('supplierList');
+            supplierList.innerHTML = `
+                <div class="error-message">
+                    <div class="error-icon">⚠️</div>
+                    <div class="error-title">Search Error</div>
+                    <div>${message}</div>
+                </div>
+            `;
+        }
+
+        // 显示提示信息
+        function showMessage(message, type = 'info') {
+            // 简单的提示实现
+            alert(message);
+        }
+
+        // 显示/隐藏加载状态
+        function showLoading(show) {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const searchBtn = document.getElementById('searchBtn');
+            
+            if (show) {
+                loadingOverlay.classList.add('show');
+                searchBtn.classList.add('loading');
+            } else {
+                loadingOverlay.classList.remove('show');
+                searchBtn.classList.remove('loading');
+            }
+        }
+
+        // 搜索完成闪烁动画
+        function showSearchCompleteAnimation() {
+            const searchBtn = document.getElementById('searchBtn');
+            const searchInput = document.getElementById('searchInput');
+            
+            // 添加闪烁效果
+            searchBtn.style.animation = 'searchComplete 0.3s ease-in-out';
+            searchInput.style.animation = 'searchComplete 0.3s ease-in-out';
+            
+            // 0.3秒后移除动画
+            setTimeout(() => {
+                searchBtn.style.animation = '';
+                searchInput.style.animation = '';
+            }, 300);
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Supplier search function initialized');
+            
+            // 可以在这里加载默认的供货商列表
+            // loadDefaultSuppliers();
+        });
+
+        // 加载默认供货商列表（可选）
+        function loadDefaultSuppliers() {
+            // 使用默认搜索词加载初始数据
+            searchSuppliers('cotton');
+        }
+    </script>
+</body>
+</html>

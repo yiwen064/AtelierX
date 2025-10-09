@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Q&A - AI Design Assistant</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Artifika:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* 色彩系统 - 基于柔和粉色，确保WCAG对比度 */
+            --primary-pink: #F5E6E8;
+            --primary-pink-dark: #E8D1D5;
+            --primary-pink-darker: #D4B8BD;
+            --accent-pink: #F0D6DA;
+            --text-primary: #2D1B1D;
+            --text-secondary: #5A4A4C;
+            --text-tertiary: #8A7A7C;
+            --background-gradient: linear-gradient(135deg, #F5E6E8 0%, #F9F1F2 50%, #FDF7F8 100%);
+            --card-background: rgba(255, 255, 255, 0.8);
+            --shadow-soft: 0 4px 20px rgba(245, 230, 232, 0.3);
+            --shadow-hover: 0 8px 30px rgba(245, 230, 232, 0.4);
+            --border-radius: 16px;
+            --border-radius-large: 24px;
+            --spacing-xs: 8px;
+            --spacing-sm: 16px;
+            --spacing-md: 24px;
+            --spacing-lg: 32px;
+            --spacing-xl: 48px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Artifika', serif;
+            background: white;
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* iPhone 16 Pro Max 尺寸优化 */
+        .app-container {
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            background: 
+                radial-gradient(ellipse at top right, #FEFBEF 0%, transparent 50%),
+                linear-gradient(180deg, #F5E6E8 0%, #F9F1F2 30%, #FDF7F8 50%, #EFF6FF 100%);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header 组件 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+            border-bottom: 1px solid rgba(123, 90, 89, 0.1);
+            box-shadow: 0 2px 8px rgba(123, 90, 89, 0.1);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button {
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .back-button:hover {
+            transform: translateX(-2px);
+        }
+
+        .back-icon {
+            width: 24px;
+            height: 24px;
+            filter: brightness(0) saturate(100%) invert(45%) sepia(15%) saturate(800%) hue-rotate(320deg) brightness(90%) contrast(85%);
+        }
+
+        .page-title {
+            font-family: 'Agbalumo', cursive;
+            font-size: 18px;
+            color: #7B5A59;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            width: 60px;
+            justify-content: flex-end;
+        }
+
+        .icon-button {
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .icon-button:hover {
+            background: transparent;
+            transform: translateY(-1px);
+        }
+
+        .icon-button:active {
+            transform: translateY(0);
+            background: transparent;
+        }
+
+        .icon-button svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-primary);
+        }
+
+        .header-icon {
+            width: 31px;
+            height: 31px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .notification-icon {
+            width: 23px;
+            height: 26px;
+            object-fit: contain;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            padding: var(--spacing-lg) var(--spacing-md) 0;
+            padding-bottom: 0;
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 对话区域 */
+        .chat-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .chat-messages {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            padding: var(--spacing-sm) 0;
+            overflow-y: auto;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            animation: messageSlideIn 0.3s ease-out;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user-message {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .ai-avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .user-message .message-avatar {
+            background: transparent;
+            color: white;
+            font-size: 18px;
+        }
+
+        .user-avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .message-content {
+            flex: 1;
+            max-width: calc(100% - 60px);
+        }
+
+        .message-text {
+            background: rgba(255, 255, 255, 0.9);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 18px;
+            color: var(--text-primary);
+            line-height: 1.5;
+            word-wrap: break-word;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(245, 230, 232, 0.3);
+        }
+
+        .user-message .message-text {
+            background: linear-gradient(135deg, #F5E6E8, #F0D6DA);
+            color: var(--text-primary);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+            padding-left: var(--spacing-sm);
+        }
+
+        .user-message .message-time {
+            text-align: right;
+            padding-left: 0;
+            padding-right: var(--spacing-sm);
+            color: var(--text-tertiary);
+        }
+
+        /* 功能卡片区域 */
+        .features-section {
+            margin-bottom: auto;
+            padding-top: var(--spacing-md);
+        }
+
+        .feature-cards {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .feature-card {
+            width: 287px;
+            height: 43px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--border-radius-large);
+            padding: 0 var(--spacing-md);
+            box-shadow: 0 4px 20px rgba(245, 230, 232, 0.2);
+            border: 2px solid #FFC9C7;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(245, 230, 232, 0.3);
+        }
+
+        .feature-card:active {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            width: 100%;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .card-icon img {
+            width: 29px;
+            height: 29px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(80%) sepia(18%) saturate(1200%) hue-rotate(325deg) brightness(100%) contrast(95%);
+        }
+
+        .card-title {
+            font-family: 'Agbalumo', cursive;
+            font-size: 14px;
+            color: #7B5A59;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        /* 输入框区域 */
+        .input-section {
+            margin-top: var(--spacing-md);
+            flex-shrink: 0;
+            position: fixed;
+            bottom: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 32px);
+            max-width: 398px;
+            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 键盘弹出时的输入框样式 */
+        .input-section.keyboard-active {
+            bottom: 20px;
+            transform: translateX(-50%) translateY(-20px);
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--border-radius-large);
+            padding: var(--spacing-sm) var(--spacing-md);
+            box-shadow: 0 4px 20px rgba(245, 230, 232, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(20px);
+        }
+
+        .message-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-primary);
+            outline: none;
+            font-family: 'Artifika', serif;
+        }
+
+        .message-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .send-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #F5E6E8, #F0D6DA);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(245, 230, 232, 0.4);
+        }
+
+        .send-button.active {
+            background: linear-gradient(135deg, #FFB6C1, #FFC0CB);
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+        }
+
+        .send-button.clicked {
+            background: linear-gradient(135deg, #FFB6C1, #FFC0CB);
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+        }
+
+        .send-button:active {
+            transform: scale(0.95);
+        }
+
+        .send-button.clicked:hover {
+            transform: scale(1.05);
+        }
+
+        .send-button.clicked:active {
+            transform: scale(0.95);
+        }
+
+        .send-button svg {
+            fill: #7B5A59;
+            width: 16px;
+            height: 16px;
+            transform: rotate(-145deg);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .send-icon {
+            width: 16px;
+            height: 16px;
+            fill: #7B5A59;
+            transform: rotate(-145deg);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 底部导航栏 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 440px;
+            height: 94px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(245, 230, 232, 0.3) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 24px 24px 0 0;
+            padding: var(--spacing-md) 0 var(--spacing-sm);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -4px 20px rgba(245, 230, 232, 0.2);
+            margin-top: auto;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: var(--spacing-xs);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 80px;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(245, 230, 232, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: rgba(245, 230, 232, 0.6);
+            transform: translateY(-2px);
+        }
+
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            object-fit: cover;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: brightness(0) saturate(100%) invert(45%) sepia(8%) saturate(1200%) hue-rotate(315deg) brightness(95%) contrast(88%);
+        }
+
+        .nav-item:hover {
+            background: rgba(245, 230, 232, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: rgba(245, 230, 232, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.15);
+        }
+
+        .nav-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--text-primary);
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 430px) {
+            .app-container {
+                max-width: 100%;
+            }
+            
+            .welcome-title {
+                font-size: 24px;
+            }
+            
+            .main-content {
+                padding: var(--spacing-md) var(--spacing-sm);
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-section,
+        .feature-card {
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .feature-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        /* 加载状态 */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* AI回复显示区域 */
+        .ai-response-section {
+            margin: var(--spacing-md) var(--spacing-md) 0;
+            animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ai-response-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: var(--border-radius-large);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-soft);
+            border: 2px solid #E8F4FD;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-response-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px solid rgba(123, 90, 89, 0.1);
+        }
+
+        .ai-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #F5E6E8, #F0D6DA);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(245, 230, 232, 0.3);
+        }
+
+        .ai-title {
+            font-family: 'Agbalumo', cursive;
+            font-size: 16px;
+            color: #7B5A59;
+            margin: 0;
+            flex: 1;
+        }
+
+        .clear-response {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #7B5A59;
+            padding: 4px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clear-response:hover {
+            background: rgba(123, 90, 89, 0.1);
+            transform: scale(1.1);
+        }
+
+        .ai-response-content {
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 15px;
+            margin-bottom: var(--spacing-sm);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .ai-response-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: right;
+            margin-top: var(--spacing-sm);
+        }
+
+        /* 加载状态 */
+        .ai-loading {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .loading-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #7B5A59;
+            animation: loadingDot 1.4s infinite ease-in-out;
+        }
+
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes loadingDot {
+            0%, 80%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            40% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* 错误消息样式 */
+        .error-message {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin: 10px 0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <button class="icon-button back-button" onclick="goBack()" aria-label="Back">
+                    <img src="设计图/返回键Icon.svg" alt="Back" class="back-icon">
+                </button>
+                <h1 class="page-title">Intelligent Q&A</h1>
+            </div>
+            <div class="header-actions">
+                <button class="icon-button" aria-label="Notifications">
+                    <img src="设计图/通知icon2.png" alt="Notifications" class="notification-icon">
+                </button>
+                <button class="icon-button" aria-label="User Profile">
+                    <img src="设计图/我的头像.png" alt="User" class="header-icon">
+                </button>
+            </div>
+        </header>
+
+        <!-- 主要内容 -->
+        <main class="main-content">
+            <!-- AI对话区域 -->
+            <section class="chat-section">
+                <div class="chat-messages" id="chatMessages">
+                    <!-- 对话消息将在这里显示 -->
+                </div>
+            </section>
+
+        </main>
+
+        <!-- 输入框区域 -->
+        <section class="input-section">
+            <div class="input-container">
+                <input type="text" class="message-input" placeholder="Ask me anything about fashion design...">
+                    <button class="send-button" onclick="sendMessage()">
+                        <svg viewBox="0 0 24 24" class="send-icon">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                    </button>
+            </div>
+        </section>
+
+
+        <!-- 底部导航栏 -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="setActiveNav(this, 'home')">
+                <img src="设计图/home icon.png" alt="首页" class="nav-icon">
+                <span class="nav-label">Home</span>
+            </div>
+            <div class="nav-item" onclick="setActiveNav(this, 'inspiration')">
+                <img src="设计图/Inspiration icon.png" alt="灵感" class="nav-icon">
+                <span class="nav-label">Inspiration</span>
+            </div>
+            <div class="nav-item" onclick="setActiveNav(this, 'supplier')">
+                <img src="设计图/Supplier icon.png" alt="供应商" class="nav-icon">
+                <span class="nav-label">Supplier</span>
+            </div>
+            <div class="nav-item" onclick="setActiveNav(this, 'account')">
+                <img src="设计图/Account icon.png" alt="账户" class="nav-icon">
+                <span class="nav-label">Account</span>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // Back functionality
+        function goBack() {
+            // Return to homepage or use browser history
+            if (document.referrer) {
+                window.history.back();
+            } else {
+                window.location.href = '主页.html';
+            }
+        }
+
+        // Navigation functionality
+        function setActiveNav(element, page) {
+            // Remove all active states
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active state to current item
+            element.classList.add('active');
+            
+            // Navigate based on page
+            switch(page) {
+                case 'home':
+                    window.location.href = '主页.html';
+                    break;
+                case 'inspiration':
+                    window.location.href = '灵感来源.html';
+                    break;
+                case 'supplier':
+                    window.location.href = '供货商.html';
+                    break;
+                case 'account':
+                    window.location.href = '个人.html';
+                    break;
+            }
+        }
+
+        // Feature card navigation
+        function navigateToInspiration() {
+            console.log('Navigate to inspiration collection page');
+            window.location.href = '灵感收集分析1.html';
+        }
+
+        function navigateToAnalysis() {
+            console.log('Navigate to garment analysis page');
+            // Add page navigation logic here
+        }
+
+        // 添加触摸反馈和动画效果
+        document.querySelectorAll('.feature-card').forEach(element => {
+            element.addEventListener('touchstart', function() {
+                this.style.transform = 'translateY(0) scale(0.95)';
+            });
+            
+            element.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+
+            // 添加点击波纹效果
+            element.addEventListener('click', function(e) {
+                const ripple = document.createElement('div');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                `;
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // 添加波纹动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // ========== 智能问答API集成 ==========
+        const KNOWLEDGE_QA_API_URL = 'https://lynn-cafa-system.app.n8n.cloud/webhook/api/knowledge-qa';
+        let isAIResponding = false;
+
+        // 缓存系统
+        const responseCache = new Map();
+        const CACHE_EXPIRY = 5 * 60 * 1000; // 5分钟缓存
+
+        // 发送消息功能 - 调用知识问答API
+        function sendMessage() {
+            const input = document.querySelector('.message-input');
+            const sendButton = document.querySelector('.send-button');
+            const message = input.value.trim();
+            
+            if (message && !isAIResponding) {
+                console.log('Sending message to Knowledge QA API:', message);
+                
+                // 添加点击效果
+                sendButton.classList.add('clicked');
+                
+                // 调用知识问答API
+                sendToAI(message);
+                
+                input.value = '';
+                updateSendButtonState();
+                
+                // 延迟移除点击效果
+                setTimeout(() => {
+                    sendButton.classList.remove('clicked');
+                }, 300);
+            }
+        }
+
+        // 添加用户消息到对话
+        function addUserMessage(message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user-message';
+            messageDiv.innerHTML = `
+                <div class="message-avatar">
+                    <img src="设计图/我的头像.png" alt="User" class="user-avatar-img">
+                </div>
+                <div class="message-content">
+                    <div class="message-text">${escapeHtml(message)}</div>
+                    <div class="message-time">${getCurrentTime()}</div>
+                </div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // 添加AI消息到对话
+        function addAIMessage(message, isError = false) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ai-message';
+            
+            if (isError) {
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">
+                        <img src="设计图/ai头像.png" alt="AI Assistant" class="ai-avatar-img">
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text" style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white;">
+                            ⚠️ ${escapeHtml(message)}
+                        </div>
+                        <div class="message-time">${getCurrentTime()}</div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">
+                        <img src="设计图/ai头像.png" alt="AI Assistant" class="ai-avatar-img">
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">${escapeHtml(message)}</div>
+                        <div class="message-time">${getCurrentTime()}</div>
+                    </div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // 显示AI思考状态
+        function showAIThinking(show) {
+            const existingThinking = document.getElementById('ai-thinking');
+            
+            if (show && !existingThinking) {
+                const chatMessages = document.getElementById('chatMessages');
+                const thinkingDiv = document.createElement('div');
+                thinkingDiv.id = 'ai-thinking';
+                thinkingDiv.className = 'message ai-message';
+                thinkingDiv.innerHTML = `
+                    <div class="message-avatar">
+                        <img src="设计图/ai头像.png" alt="AI Assistant" class="ai-avatar-img">
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">
+                    <div class="ai-loading">
+                                <span>AI is thinking...</span>
+                        <div class="loading-dots">
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                chatMessages.appendChild(thinkingDiv);
+                scrollToBottom();
+            } else if (!show && existingThinking) {
+                existingThinking.remove();
+            }
+        }
+
+        // 滚动到底部
+        function scrollToBottom() {
+            const chatMessages = document.getElementById('chatMessages');
+                setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 100);
+        }
+
+        // 发送消息到AI - 5秒超时后使用本地数据
+        async function sendToAI(message) {
+            if (isAIResponding) return;
+            
+            // 检查缓存
+            const cacheKey = message.toLowerCase().trim();
+            const cachedResponse = responseCache.get(cacheKey);
+            if (cachedResponse && (Date.now() - cachedResponse.timestamp < CACHE_EXPIRY)) {
+                addUserMessage(message);
+                setTimeout(() => {
+                    addAIMessage(cachedResponse.response);
+                }, 50);
+                return;
+            }
+            
+            // 添加用户消息
+            addUserMessage(message);
+            
+            isAIResponding = true;
+            showAIThinking(true);
+            
+            // 设置5秒超时
+            const API_TIMEOUT = 5000;
+            const minThinkingTime = 200;
+            const startTime = Date.now();
+            let hasResponded = false;
+            
+            // 5秒后自动切换到本地数据
+            const fallbackTimer = setTimeout(() => {
+                if (!hasResponded) {
+                    console.log('API timeout, switching to local data');
+                    hasResponded = true;
+                    const intelligentResponse = getIntelligentResponse(message);
+                    const elapsedTime = Date.now() - startTime;
+                    const remainingTime = Math.max(0, minThinkingTime - elapsedTime);
+                    
+                    // 缓存响应
+                    responseCache.set(cacheKey, {
+                        response: intelligentResponse,
+                        timestamp: Date.now()
+                    });
+                    
+                    setTimeout(() => {
+                        showAIThinking(false);
+                        addAIMessage(intelligentResponse);
+                        isAIResponding = false;
+                    }, remainingTime + 10);
+                }
+            }, API_TIMEOUT);
+            
+            try {
+                // 根据n8n工作流的期望格式构建请求
+                const requestBody = {
+                    question: message,
+                    category: 'general',
+                    context: 'You are a fashion design assistant. Please respond ONLY in English. Do not use Chinese characters. Provide detailed, professional advice about fashion design, fabrics, colors, trends, and styling.',
+                    language: 'en',
+                    responseLanguage: 'english',
+                    instructions: 'Respond in English only. No Chinese characters allowed.',
+                    timestamp: new Date().toISOString()
+                };
+
+                console.log('Sending to n8n Knowledge QA API:', requestBody);
+
+                // 创建带超时的fetch请求
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+                
+                const response = await fetch(KNOWLEDGE_QA_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Accept': 'application/json; charset=utf-8',
+                        'Accept-Charset': 'utf-8'
+                    },
+                    body: JSON.stringify(requestBody),
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                clearTimeout(fallbackTimer);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('=== API RESPONSE DEBUG ===');
+                console.log('Full response:', data);
+                console.log('Response type:', typeof data);
+                console.log('Response keys:', Object.keys(data || {}));
+                console.log('Response as JSON string:', JSON.stringify(data, null, 2));
+                console.log('========================');
+
+                // 处理n8n工作流的AI回复
+                let aiResponse = '';
+                
+                // n8n工作流可能返回不同的数据结构
+                if (data) {
+                    // 尝试各种可能的n8n响应格式
+                    aiResponse = data.answer || 
+                                data.response || 
+                                data.result || 
+                                data.message || 
+                                data.text || 
+                                data.content ||
+                                data.output ||
+                                data.reply;
+                    
+                    console.log('Extracted AI response:', aiResponse);
+                    console.log('AI response type:', typeof aiResponse);
+                    
+                    // 检查嵌套结构
+                    if (!aiResponse && data.data) {
+                        aiResponse = data.data.answer || 
+                                    data.data.response || 
+                                    data.data.result || 
+                                    data.data.message ||
+                                    data.data.output ||
+                                    data.data.reply;
+                    }
+                    
+                    // 检查是否有success字段但值为false
+                    if (data.success === false) {
+                        const errorMsg = data.error || data.message || 'n8n workflow returned an error';
+                        console.error('n8n workflow error:', errorMsg);
+                        throw new Error(errorMsg);
+                    }
+                    
+                    if (!aiResponse) {
+                        console.warn('No valid response field found in n8n response:', data);
+                        // 尝试直接使用整个响应作为字符串
+                        if (typeof data === 'string') {
+                            aiResponse = data;
+                        } else {
+                            aiResponse = JSON.stringify(data, null, 2);
+                        }
+                    }
+                    
+                    // 智能响应处理
+                    if (aiResponse && typeof aiResponse === 'string') {
+                        console.log('Raw AI response before cleaning:', aiResponse);
+                        
+                        // 检查是否是乱码或无效响应
+                        const isGarbled = checkIfGarbled(aiResponse);
+                        const isTooShort = aiResponse.trim().length < 10;
+                        const hasNoEnglish = !/[a-zA-Z]/.test(aiResponse);
+                        
+                        if (isGarbled || isTooShort || hasNoEnglish) {
+                            console.warn('Response appears to be garbled or invalid, using intelligent fallback');
+                            aiResponse = getIntelligentResponse(message);
+                        } else {
+                            // 清理响应但保留内容
+                            aiResponse = aiResponse
+                                .replace(/[\u4e00-\u9fff]/g, '')  // 移除中文字符
+                                .replace(/[*#]{3,}/g, ' ')        // 移除连续的特殊字符
+                                .replace(/\s+/g, ' ')             // 清理多余空格
+                                .trim();
+                            console.log('Using cleaned response:', aiResponse);
+                        }
+                    } else {
+                        // 如果没有响应，使用智能回复
+                        console.warn('No response found, using intelligent fallback');
+                        aiResponse = getIntelligentResponse(message);
+                    }
+                    
+                    // 缓存响应
+                    responseCache.set(cacheKey, {
+                        response: aiResponse,
+                        timestamp: Date.now()
+                    });
+                    
+                    console.log('Final AI response:', aiResponse);
+                } else {
+                    throw new Error('Empty response from n8n Knowledge QA API');
+                }
+
+                // 最终检查：确保回复是英文
+                const finalResponse = aiResponse.replace(/[\u4e00-\u9fff]/g, '').trim();
+                
+                if (!hasResponded) {
+                    hasResponded = true;
+                    const elapsedTime = Date.now() - startTime;
+                    const remainingTime = Math.max(0, minThinkingTime - elapsedTime);
+                    
+                    setTimeout(() => {
+                        showAIThinking(false);
+                        if (finalResponse && finalResponse.length > 10) {
+                            addAIMessage(finalResponse);
+                        } else {
+                            addAIMessage(getIntelligentResponse(message));
+                        }
+                        isAIResponding = false;
+                    }, remainingTime + 10);
+                }
+
+            } catch (error) {
+                console.error('n8n Knowledge QA API request failed:', error);
+                clearTimeout(fallbackTimer);
+                
+                if (!hasResponded) {
+                    hasResponded = true;
+                    const elapsedTime = Date.now() - startTime;
+                    const remainingTime = Math.max(0, minThinkingTime - elapsedTime);
+                    
+                    setTimeout(() => {
+                        showAIThinking(false);
+                        const intelligentResponse = getIntelligentResponse(message);
+                        addAIMessage(intelligentResponse);
+                        isAIResponding = false;
+                    }, remainingTime + 10);
+                }
+            }
+        }
+
+        // 获取当前时间
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+            });
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 清理和验证文本，确保只包含可读的英文内容
+        function cleanAndValidateText(text) {
+            if (!text) return text;
+            
+            console.log('Original text:', text);
+            
+            // 移除各种可能的乱码字符，但保留正常的格式
+            let cleanText = text
+                // 移除控制字符
+                .replace(/[\x00-\x1F\x7F-\x9F]/g, '')
+                // 移除过多连续的特殊符号（保留正常的编号格式）
+                .replace(/[*#]{4,}/g, ' ')
+                // 移除中文字符
+                .replace(/[\u4e00-\u9fff]/g, '')
+                // 移除其他非英文字符（保留基本标点和数字）
+                .replace(/[^\x20-\x7E]/g, ' ')
+                // 清理多余空格
+                .replace(/\s+/g, ' ')
+                .trim();
+            
+            console.log('Cleaned text:', cleanText);
+            
+            // 放宽验证条件，只检查是否包含英文内容
+            if (cleanText.length < 10 || !cleanText.match(/[a-zA-Z]/)) {
+                console.warn('Text appears to be corrupted or too short after cleaning');
+                return null; // 返回null表示需要使用备用回复
+            }
+            
+            return cleanText;
+        }
+
+        // 确保回复只包含英文 - 临时禁用清理
+        function ensureEnglishOnly(text) {
+            console.log('ensureEnglishOnly called with:', text);
+            // 临时直接返回原始文本，不进行任何处理
+            return text;
+        }
+
+        // 检查是否是乱码
+        function checkIfGarbled(text) {
+            if (!text || typeof text !== 'string') return true;
+            
+            // 检查特殊字符比例
+            const specialCharCount = (text.match(/[*#\-_]{3,}/g) || []).length;
+            const totalLength = text.length;
+            const specialCharRatio = specialCharCount / totalLength;
+            
+            // 检查是否包含大量非英文字符
+            const nonEnglishRatio = (text.match(/[^\x20-\x7E]/g) || []).length / totalLength;
+            
+            // 检查是否包含重复字符模式
+            const hasRepeatingPattern = /(.)\1{4,}/.test(text);
+            
+            return specialCharRatio > 0.3 || nonEnglishRatio > 0.5 || hasRepeatingPattern || totalLength < 5;
+        }
+        
+        // 获取智能响应（包含引导语）
+        function getIntelligentResponse(message) {
+            const lowerMessage = message.toLowerCase().trim();
+            
+            // 检查问题是否过于简单或模糊
+            if (lowerMessage.length < 5) {
+                return "I'd love to help you with your fashion design question! Could you please provide more details about what you're looking for? For example, are you asking about colors, fabrics, styles, or something else specific?";
+            }
+            
+            // 检查是否是问候语
+            if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+                return "Hello! I'm your fashion design assistant. I can help you with questions about colors, fabrics, patterns, trends, garment construction, and styling. What would you like to know about fashion design today?";
+            }
+            
+            // 检查问题是否过于宽泛
+            if (lowerMessage.includes('help') && !lowerMessage.includes('specific')) {
+                return "I'm here to help with your fashion design needs! To give you the best advice, could you tell me more specifically what you're working on? For example:\n\n• Are you designing a particular garment (dress, skirt, top)?\n• Do you need help with color selection?\n• Are you looking for fabric recommendations?\n• Do you want to know about current trends?\n\nThe more details you provide, the better I can assist you!";
+            }
+            
+            // 检查是否包含时尚设计相关关键词
+            const fashionKeywords = ['dress', 'skirt', 'top', 'blouse', 'fabric', 'color', 'pattern', 'style', 'trend', 'design', 'fashion', 'garment', 'clothing'];
+            const hasFashionKeywords = fashionKeywords.some(keyword => lowerMessage.includes(keyword));
+            
+            if (!hasFashionKeywords) {
+                return "I specialize in fashion design advice! While I'd be happy to help, could you please ask a question related to fashion design? For example:\n\n• What colors work well for a summer dress?\n• Which fabrics are best for a formal blouse?\n• What are the current fashion trends?\n• How do I choose the right pattern for a skirt?\n\nI can provide detailed guidance on any fashion design topic!";
+            }
+            
+            // 如果问题看起来合理但API返回乱码，提供相关建议
+            if (lowerMessage.includes('color') || lowerMessage.includes('colour')) {
+                return "I'd be happy to help with color selection! For the best advice, could you tell me:\n\n• What type of garment are you designing?\n• What's the occasion (casual, formal, party)?\n• What season is it for?\n• Do you have any specific colors in mind?\n\nWith these details, I can give you personalized color recommendations!";
+            }
+            
+            if (lowerMessage.includes('fabric') || lowerMessage.includes('material')) {
+                return "Great question about fabrics! To recommend the best materials, could you share:\n\n• What garment are you making?\n• What's the intended use (everyday, special occasion, work)?\n• What season will it be worn in?\n• Do you prefer natural or synthetic fibers?\n\nThis will help me suggest the perfect fabric for your project!";
+            }
+            
+            if (lowerMessage.includes('trend') || lowerMessage.includes('fashion')) {
+                return "I'd love to share current fashion trends! To give you the most relevant information, could you specify:\n\n• Are you interested in a particular season (spring, summer, fall, winter)?\n• What's your target audience (women, men, children)?\n• Are you looking for casual or formal trends?\n• Any specific categories (dresses, tops, accessories)?\n\nLet me know and I'll provide detailed trend insights!";
+            }
+            
+            // 默认引导语
+            return "I understand you're asking about fashion design, but I'd like to provide you with the most helpful answer possible. Could you please rephrase your question with a bit more detail? For example:\n\n• Instead of 'help with design' → 'What colors work best for a summer maxi dress?'\n• Instead of 'fabric advice' → 'What fabric should I use for a professional blouse?'\n\nThis way, I can give you specific, actionable advice!";
+        }
+        
+        // 获取基于问题内容的备用回复
+        function getFallbackResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            if (lowerMessage.includes('color') || lowerMessage.includes('colour')) {
+                return 'When choosing colors for dress design, consider: 1) Skin tone compatibility (warm vs cool undertones), 2) Occasion appropriateness (bold colors for casual, neutral for professional), 3) Season relevance (pastels for spring, earth tones for fall), 4) Color psychology (red for confidence, blue for trust), and 5) Brand identity consistency. Popular combinations include monochromatic schemes, complementary colors, and neutral bases with accent colors.';
+            } else if (lowerMessage.includes('fabric') || lowerMessage.includes('material') || lowerMessage.includes('textile')) {
+                if (lowerMessage.includes('skirt')) {
+                    return 'For skirts, popular fabric choices include: 1. Cotton and cotton blends - breathable, easy care, perfect for casual A-line and pleated skirts. 2. Polyester - wrinkle-resistant, durable, holds pleats well. 3. Wool and wool blends - structured, warm, ideal for pencil skirts and winter wear. 4. Silk - luxurious drape, perfect for flowing midi and maxi skirts. 5. Denim - sturdy, versatile, great for casual and mini skirts. 6. Jersey knits - stretchy, comfortable, excellent for fitted and wrap skirts. The choice depends on the skirt style, season, and desired look.';
+                } else {
+                    return 'For dress design, fabric choice is crucial: Cotton and cotton blends offer breathability and easy care for casual dresses. Silk provides luxury and elegant drape for formal wear. Jersey and knits ensure comfort and stretch for everyday pieces. Chiffon and tulle create flowing, romantic silhouettes. Wool and wool blends provide structure and warmth. Linen offers lightweight, casual appeal. Consider fabric weight, drape, care requirements, and intended use when selecting materials.';
+                }
+            } else if (lowerMessage.includes('trend') || lowerMessage.includes('fashion') || lowerMessage.includes('style')) {
+                return 'Current fashion trends emphasize sustainability, comfort, and versatility. Key trends include: eco-friendly and recycled materials, oversized and relaxed silhouettes, bold statement colors alongside neutral palettes, vintage and retro-inspired designs, minimalist and clean aesthetics, gender-neutral clothing options, and multi-functional pieces. Sustainability and ethical production are increasingly important considerations in modern fashion design.';
+            } else if (lowerMessage.includes('pattern') || lowerMessage.includes('print')) {
+                return 'Popular patterns in fashion design include: floral prints (timeless and feminine), geometric patterns (modern and structured), stripes (classic and versatile), animal prints (bold and statement-making), abstract designs (artistic and unique), and minimalist prints (subtle and sophisticated). Consider pattern scale, placement, color coordination, and target audience when incorporating prints into dress designs.';
+            } else {
+                return 'I\'m here to help with fashion design questions! I can provide advice on fabric selection, color coordination, pattern design, current trends, garment construction, and styling tips. Please feel free to ask about any specific aspect of fashion design, and I\'ll provide detailed guidance to help with your creative process.';
+            }
+        }
+
+
+        // 更新发送按钮状态
+        function updateSendButtonState() {
+            const input = document.querySelector('.message-input');
+            const sendButton = document.querySelector('.send-button');
+            
+            if (input.value.trim()) {
+                sendButton.classList.add('active');
+            } else {
+                sendButton.classList.remove('active');
+            }
+        }
+
+        // 键盘检测和输入框自适应
+        let initialViewportHeight = window.innerHeight;
+        let isKeyboardOpen = false;
+
+        function handleViewportChange() {
+            const currentHeight = window.innerHeight;
+            const inputSection = document.querySelector('.input-section');
+            
+            // 检测键盘是否打开（视口高度减少超过150px）
+            if (currentHeight < initialViewportHeight - 150) {
+                if (!isKeyboardOpen) {
+                    isKeyboardOpen = true;
+                    inputSection.classList.add('keyboard-active');
+                }
+            } else {
+                if (isKeyboardOpen) {
+                    isKeyboardOpen = false;
+                    inputSection.classList.remove('keyboard-active');
+                }
+            }
+        }
+
+        // 输入框回车发送
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.querySelector('.message-input');
+            
+            // 主页输入框事件
+            if (messageInput) {
+                messageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
+                
+                messageInput.addEventListener('input', updateSendButtonState);
+                
+                // 监听输入框焦点事件
+                messageInput.addEventListener('focus', function() {
+                    // 延迟检测，确保键盘完全弹出
+                    setTimeout(handleViewportChange, 300);
+                });
+                
+                messageInput.addEventListener('blur', function() {
+                    // 延迟检测，确保键盘完全收起
+                    setTimeout(handleViewportChange, 300);
+                });
+            }
+            
+            // 监听窗口大小变化
+            window.addEventListener('resize', handleViewportChange);
+            
+            // 监听视口变化（移动端键盘）
+            window.addEventListener('orientationchange', function() {
+                setTimeout(() => {
+                    initialViewportHeight = window.innerHeight;
+                    handleViewportChange();
+                }, 500);
+            });
+
+            // Initialize AI assistant
+            console.log('AI Design Assistant initialized - Chat mode');
+
+            // Check URL parameters for question
+            const urlParams = new URLSearchParams(window.location.search);
+            const question = urlParams.get('question');
+            if (question) {
+                // Quick load for better user experience
+                setTimeout(() => {
+                    // Automatically send question from homepage
+                    sendToAI(decodeURIComponent(question));
+                }, 200);
+            }
+        });
+    </script>
+</body>
+</html>

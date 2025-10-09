@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Q&A API Test - n8n Workflow Validation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .test-panel {
+            padding: 40px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .result-panel {
+            padding: 40px;
+            background: white;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .test-button {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(238, 90, 36, 0.4);
+        }
+
+        .test-button:active {
+            transform: translateY(-1px);
+        }
+
+        .test-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .status-indicator {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-success {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+        }
+
+        .status-error {
+            background: linear-gradient(135deg, #e17055, #d63031);
+            color: white;
+        }
+
+        .status-info {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+        }
+
+        .response-details {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .response-details h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .detail-value {
+            color: #495057;
+            font-family: 'Courier New', monospace;
+        }
+
+        .response-content {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .troubleshooting {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .troubleshooting h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .troubleshooting ul {
+            margin-left: 20px;
+        }
+
+        .troubleshooting li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
+            
+            .test-panel, .result-panel {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+
+        .url-display {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="test-panel">
+            <h1>🧠 Knowledge Q&A API Test</h1>
+            <p class="subtitle">Validate n8n workflow communication URL and response standards</p>
+            
+            <div class="url-display">
+                <strong>API Endpoint:</strong><br>
+                https://lynn-cafa-system.app.n8n.cloud/webhook/api/knowledge-qa
+            </div>
+
+            <div class="form-group">
+                <label for="question">Question:</label>
+                <textarea id="question" placeholder="Enter your question about fashion design, materials, or processes...">What are the latest trends in sustainable fashion materials?</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category (Optional):</label>
+                <select id="category">
+                    <option value="">Select category...</option>
+                    <option value="materials">Materials</option>
+                    <option value="design">Design</option>
+                    <option value="trends">Trends</option>
+                    <option value="sustainability">Sustainability</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="general">General</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="context">Context (Optional):</label>
+                <input type="text" id="context" placeholder="Additional context or specific focus area...">
+            </div>
+
+            <button class="test-button" onclick="testKnowledgeQA()">
+                <span class="loading-spinner" id="spinner"></span>
+                <span id="buttonText">🚀 Test Knowledge Q&A API</span>
+            </button>
+
+            <div class="troubleshooting" id="troubleshooting">
+                <h3>💡 Troubleshooting Tips:</h3>
+                <ul>
+                    <li>Ensure your n8n workflow is <strong>activated</strong> on n8n Cloud</li>
+                    <li>Check the <code>知识问答 Webhook1</code> node configuration</li>
+                    <li>Verify the path is set to <code>api/knowledge-qa</code></li>
+                    <li>Confirm <code>responseMode</code> is set to <code>responseNode</code></li>
+                    <li>Check that AI Agent and response nodes are properly connected</li>
+                    <li>Verify n8n Cloud service status and your network connection</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="result-panel">
+            <div class="result-section">
+                <h2>📊 API Response Analysis</h2>
+                
+                <div id="status" class="status-indicator status-info" style="display: none;">
+                    <span id="statusIcon">ℹ️</span>
+                    <span id="statusText">Ready to test...</span>
+                </div>
+
+                <div class="response-details" id="responseDetails" style="display: none;">
+                    <h3>Response Details</h3>
+                    <div class="detail-item">
+                        <span class="detail-label">Status Code:</span>
+                        <span class="detail-value" id="statusCode">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Response Time:</span>
+                        <span class="detail-value" id="responseTime">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Content Type:</span>
+                        <span class="detail-value" id="contentType">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Response Size:</span>
+                        <span class="detail-value" id="responseSize">-</span>
+                    </div>
+                </div>
+
+                <h3 style="color: #333; margin-bottom: 15px;">Response Content:</h3>
+                <div class="response-content" id="responseContent">
+                    Waiting for API test...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testKnowledgeQA() {
+            const apiUrl = 'https://lynn-cafa-system.app.n8n.cloud/webhook/api/knowledge-qa';
+            const question = document.getElementById('question').value.trim();
+            const category = document.getElementById('category').value;
+            const context = document.getElementById('context').value.trim();
+
+            // UI Elements
+            const statusDiv = document.getElementById('status');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+            const responseDetailsDiv = document.getElementById('responseDetails');
+            const responseContentDiv = document.getElementById('responseContent');
+            const troubleshootingDiv = document.getElementById('troubleshooting');
+            const buttonText = document.getElementById('buttonText');
+            const spinner = document.getElementById('spinner');
+            const testButton = document.querySelector('.test-button');
+
+            // Validation
+            if (!question) {
+                showStatus('error', '❌', 'Please enter a question to test the API');
+                return;
+            }
+
+            // Start loading state
+            showStatus('info', '🔄', 'Sending request to n8n workflow...');
+            responseContentDiv.textContent = 'Loading...';
+            troubleshootingDiv.style.display = 'none';
+            buttonText.textContent = 'Testing...';
+            spinner.style.display = 'inline-block';
+            testButton.disabled = true;
+
+            // Prepare request body
+            const requestBody = {
+                question: question,
+                category: category || 'general',
+                context: context || '',
+                timestamp: new Date().toISOString()
+            };
+
+            console.log('Sending request:', requestBody);
+
+            const startTime = performance.now();
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const endTime = performance.now();
+                const responseTime = (endTime - startTime).toFixed(2);
+
+                // Show response details
+                document.getElementById('statusCode').textContent = response.status;
+                document.getElementById('responseTime').textContent = `${responseTime} ms`;
+                document.getElementById('contentType').textContent = response.headers.get('content-type') || 'Unknown';
+                
+                responseDetailsDiv.style.display = 'block';
+
+                let responseData;
+                const responseText = await response.text();
+                document.getElementById('responseSize').textContent = `${responseText.length} bytes`;
+
+                try {
+                    responseData = JSON.parse(responseText);
+                } catch (e) {
+                    responseData = responseText;
+                }
+
+                console.log('API Response:', responseData);
+
+                // Display formatted response
+                responseContentDiv.textContent = typeof responseData === 'object' 
+                    ? JSON.stringify(responseData, null, 2) 
+                    : responseData;
+
+                // Analyze response
+                if (response.ok) {
+                    if (typeof responseData === 'object' && responseData.success !== false) {
+                        showStatus('success', '✅', `API call successful! Status: ${response.status}`);
+                        
+                        // Validate expected response structure
+                        if (responseData.answer || responseData.response || responseData.result) {
+                            console.log('✅ Response contains expected answer field');
+                        } else {
+                            console.log('⚠️ Response structure may need validation');
+                        }
+                    } else {
+                        showStatus('error', '⚠️', `API returned success status but with error content`);
+                        troubleshootingDiv.style.display = 'block';
+                    }
+                } else {
+                    showStatus('error', '❌', `API call failed! Status: ${response.status} - ${response.statusText}`);
+                    troubleshootingDiv.style.display = 'block';
+                }
+
+            } catch (error) {
+                const endTime = performance.now();
+                const responseTime = (endTime - startTime).toFixed(2);
+                
+                document.getElementById('responseTime').textContent = `${responseTime} ms`;
+                document.getElementById('statusCode').textContent = 'Network Error';
+                responseDetailsDiv.style.display = 'block';
+
+                console.error('Request failed:', error);
+                showStatus('error', '🚫', `Request failed: ${error.message}`);
+                responseContentDiv.textContent = `Error: ${error.message}\n\nThis could indicate:\n- Network connectivity issues\n- CORS policy restrictions\n- n8n workflow not activated\n- Invalid webhook URL\n- Server unavailable`;
+                troubleshootingDiv.style.display = 'block';
+            } finally {
+                // Reset button state
+                buttonText.textContent = '🚀 Test Knowledge Q&A API';
+                spinner.style.display = 'none';
+                testButton.disabled = false;
+            }
+        }
+
+        function showStatus(type, icon, message) {
+            const statusDiv = document.getElementById('status');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+
+            statusDiv.className = `status-indicator status-${type}`;
+            statusIcon.textContent = icon;
+            statusText.textContent = message;
+            statusDiv.style.display = 'flex';
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Knowledge Q&A API Test Page Loaded');
+            console.log('Target URL:', 'https://lynn-cafa-system.app.n8n.cloud/webhook/api/knowledge-qa');
+            
+            // Enable Enter key to trigger test
+            document.getElementById('question').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    testKnowledgeQA();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

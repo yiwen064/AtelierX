@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Test - Inspiration Collection</title>
+    <style>
+        :root {
+            --primary-pink: #F5E6E8;
+            --text-primary: #2D1B1D;
+            --text-secondary: #5A4A4C;
+            --border-radius: 16px;
+            --border-radius-large: 24px;
+            --spacing-sm: 16px;
+            --spacing-md: 24px;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(180deg, #F5E6E8 0%, #F9F1F2 30%, #FDF7F8 50%, #EFF6FF 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 430px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: var(--border-radius-large);
+            padding: var(--spacing-md);
+            box-shadow: 0 4px 20px rgba(245, 230, 232, 0.3);
+        }
+
+        .upload-area {
+            width: 100%;
+            min-height: 120px;
+            border: 2px dashed #FFC9C7;
+            border-radius: var(--border-radius);
+            background: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .uploaded-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .uploaded-image {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #FFC9C7;
+        }
+
+        .uploaded-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .add-more-box {
+            border: 2px dashed #FFC9C7 !important;
+            background: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .add-more-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .add-more-content:hover {
+            background: rgba(245, 230, 232, 0.3);
+            transform: scale(1.05);
+        }
+
+        .add-more-content .add-more-icon {
+            width: 24px;
+            height: 24px;
+            opacity: 0.6;
+        }
+
+        .upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .upload-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .test-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(245, 230, 232, 0.3);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h2>上传功能测试</h2>
+        <p>测试图片上传和预览功能</p>
+        
+        <div class="upload-area" id="uploadArea">
+            <div class="uploaded-images" id="uploadedImages">
+                <!-- 上传的图片将显示在这里 -->
+            </div>
+            <div class="upload-content" id="uploadContent">
+                <div class="upload-icon">
+                    <div style="width: 32px; height: 32px; background: #FFC9C7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">+</div>
+                </div>
+                <p class="upload-text">Upload Pictures</p>
+            </div>
+        </div>
+        
+        <div class="test-info">
+            <strong>测试说明：</strong><br>
+            1. 点击上传区域选择图片<br>
+            2. 查看图片预览效果<br>
+            3. 测试删除功能<br>
+            4. 测试继续添加功能
+        </div>
+    </div>
+
+    <script>
+        // 存储上传的图片
+        let uploadedImages = [];
+        
+        // 设置上传区域
+        function setupUploadArea() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.multiple = true;
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+
+            // 点击上传
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            // 文件选择
+            fileInput.addEventListener('change', function(e) {
+                const files = e.target.files;
+                handleFiles(files);
+            });
+        }
+
+        // 处理上传的文件
+        function handleFiles(files) {
+            console.log('上传文件:', files);
+            
+            for (let file of files) {
+                if (file.type.startsWith('image/')) {
+                    console.log('图片文件:', file.name);
+                    
+                    // 创建FileReader来读取图片
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imageData = {
+                            name: file.name,
+                            data: e.target.result,
+                            type: file.type,
+                            size: file.size
+                        };
+                        
+                        uploadedImages.push(imageData);
+                        updateUploadDisplay();
+                        console.log('图片已添加到上传列表:', imageData);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    console.log('不支持的文件类型:', file.name);
+                    alert('只支持图片文件格式');
+                }
+            }
+        }
+        
+        // 更新上传显示
+        function updateUploadDisplay() {
+            const uploadedImagesContainer = document.getElementById('uploadedImages');
+            const uploadContent = document.getElementById('uploadContent');
+            
+            // 清空现有显示
+            uploadedImagesContainer.innerHTML = '';
+            
+            // 显示上传的图片
+            uploadedImages.forEach((image, index) => {
+                const imageDiv = document.createElement('div');
+                imageDiv.className = 'uploaded-image';
+                
+                if (image.type === 'file') {
+                    // 文件类型显示
+                    imageDiv.innerHTML = `
+                        <div style="display:flex;align-items:center;justify-content:center;height:100%;background:#f0f0f0;font-size:10px;text-align:center;padding:5px;">
+                            📄<br>${image.name}
+                        </div>
+                        <button class="remove-image" onclick="removeImage(${index})">×</button>
+                    `;
+                } else {
+                    // 图片类型显示
+                    imageDiv.innerHTML = `
+                        <img src="${image.data}" alt="${image.name}">
+                        <button class="remove-image" onclick="removeImage(${index})">×</button>
+                    `;
+                }
+                
+                uploadedImagesContainer.appendChild(imageDiv);
+            });
+            
+            // 如果有上传的图片，添加"继续添加"框
+            if (uploadedImages.length > 0) {
+                const addMoreDiv = document.createElement('div');
+                addMoreDiv.className = 'uploaded-image add-more-box';
+                addMoreDiv.innerHTML = `
+                    <div class="add-more-content" onclick="triggerFileUpload()">
+                        <div style="width: 24px; height: 24px; background: #FFC9C7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; opacity: 0.6;">+</div>
+                    </div>
+                `;
+                uploadedImagesContainer.appendChild(addMoreDiv);
+                uploadContent.style.display = 'none';
+            } else {
+                uploadContent.style.display = 'flex';
+            }
+        }
+        
+        // 触发文件上传
+        function triggerFileUpload() {
+            const fileInput = document.querySelector('input[type="file"]');
+            if (fileInput) {
+                fileInput.click();
+            }
+        }
+        
+        // 移除图片
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            updateUploadDisplay();
+        }
+
+        // 页面加载时设置上传区域
+        document.addEventListener('DOMContentLoaded', function() {
+            setupUploadArea();
+        });
+    </script>
+</body>
+</html>

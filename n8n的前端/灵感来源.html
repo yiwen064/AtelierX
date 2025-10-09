@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspiration - AtelierX</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Artifika:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* 色彩系统 - 基于柔和粉色，确保WCAG对比度 */
+            --primary-pink: #F5E6E8;
+            --primary-pink-dark: #E8D1D5;
+            --primary-pink-darker: #D4B8BD;
+            --accent-pink: #F0D6DA;
+            --text-primary: #2D1B1D;
+            --text-secondary: #5A4A4C;
+            --text-tertiary: #8A7A7C;
+            --background-gradient: linear-gradient(135deg, #F5E6E8 0%, #F9F1F2 50%, #FDF7F8 100%);
+            --card-background: rgba(255, 255, 255, 0.8);
+            --shadow-soft: 0 4px 20px rgba(245, 230, 232, 0.3);
+            --shadow-hover: 0 8px 30px rgba(245, 230, 232, 0.4);
+            --border-radius: 16px;
+            --border-radius-large: 24px;
+            --spacing-xs: 8px;
+            --spacing-sm: 16px;
+            --spacing-md: 24px;
+            --spacing-lg: 32px;
+            --spacing-xl: 48px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Artifika', serif;
+            background: white;
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* iPhone 16 Pro Max 尺寸优化 */
+        .app-container {
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            background: 
+                radial-gradient(ellipse at top right, #FEFBEF 0%, transparent 50%),
+                linear-gradient(180deg, #F5E6E8 0%, #F9F1F2 30%, #FDF7F8 50%, #EFF6FF 100%);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header 组件 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+            border-bottom: 1px solid rgba(123, 90, 89, 0.1);
+            box-shadow: 0 2px 8px rgba(123, 90, 89, 0.1);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 100px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .icon-button {
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .icon-button:hover {
+            background: transparent;
+            transform: translateY(-1px);
+        }
+
+        .icon-button:active {
+            transform: translateY(0);
+            background: transparent;
+        }
+
+        .icon-button svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-primary);
+        }
+
+        .header-icon {
+            width: 31px;
+            height: 31px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .notification-icon {
+            width: 23px;
+            height: 26px;
+            object-fit: contain;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            padding: 16px 16px 120px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 欢迎区块 */
+        .welcome-section {
+            text-align: left;
+            margin-bottom: var(--spacing-md);
+            flex-shrink: 0;
+        }
+
+        .welcome-title {
+            font-family: 'Agbalumo', cursive;
+            font-size: 26px;
+            color: #7B5A59;
+            margin-bottom: var(--spacing-xs);
+            line-height: 1.2;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .feature-list {
+            text-align: left;
+            max-width: 100%;
+            margin: 0;
+        }
+
+        .feature-item {
+            margin-bottom: var(--spacing-xs);
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        .feature-text {
+            display: block;
+        }
+
+        /* 功能卡片区域 */
+        .features-section {
+            margin-bottom: auto;
+            padding-top: var(--spacing-md);
+        }
+
+        .feature-cards {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .feature-card {
+            width: 287px;
+            height: 43px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--border-radius-large);
+            padding: 0 var(--spacing-md);
+            box-shadow: 0 4px 20px rgba(245, 230, 232, 0.2);
+            border: 2px solid #FFC9C7;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(245, 230, 232, 0.3);
+        }
+
+        .feature-card:active {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            width: 100%;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .card-icon img {
+            width: 29px;
+            height: 29px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(80%) sepia(18%) saturate(1200%) hue-rotate(325deg) brightness(100%) contrast(95%);
+        }
+
+        .card-title {
+            font-family: 'Agbalumo', cursive;
+            font-size: 14px;
+            color: #7B5A59;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        /* 输入框区域 */
+        .input-section {
+            margin-top: var(--spacing-md);
+            flex-shrink: 0;
+            position: fixed;
+            bottom: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 32px);
+            max-width: 398px;
+            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 键盘弹出时的输入框样式 */
+        .input-section.keyboard-active {
+            bottom: 20px;
+            transform: translateX(-50%) translateY(-20px);
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--border-radius-large);
+            padding: var(--spacing-sm) var(--spacing-md);
+            box-shadow: 0 4px 20px rgba(245, 230, 232, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(20px);
+        }
+
+        .message-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-primary);
+            outline: none;
+            font-family: 'Artifika', serif;
+        }
+
+        .message-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .send-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #F5E6E8, #F0D6DA);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(245, 230, 232, 0.4);
+        }
+
+        .send-button.active {
+            background: linear-gradient(135deg, #FFB6C1, #FFC0CB);
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+        }
+
+        .send-button.clicked {
+            background: linear-gradient(135deg, #FFB6C1, #FFC0CB);
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+        }
+
+        .send-button:active {
+            transform: scale(0.95);
+        }
+
+        .send-button.clicked:hover {
+            transform: scale(1.05);
+        }
+
+        .send-button.clicked:active {
+            transform: scale(0.95);
+        }
+
+        .send-button svg {
+            fill: #7B5A59;
+            width: 16px;
+            height: 16px;
+            transform: rotate(-145deg);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .send-icon {
+            width: 16px;
+            height: 16px;
+            fill: #7B5A59;
+            transform: rotate(-145deg);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 底部导航栏 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 440px;
+            height: 94px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(245, 230, 232, 0.3) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 24px 24px 0 0;
+            padding: var(--spacing-md) 0 var(--spacing-sm);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(245, 230, 232, 0.3);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: var(--spacing-xs);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 80px;
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(245, 230, 232, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: rgba(245, 230, 232, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .nav-item:active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            object-fit: cover;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: brightness(0) saturate(100%) invert(45%) sepia(8%) saturate(1200%) hue-rotate(315deg) brightness(95%) contrast(88%);
+        }
+
+        .nav-item:hover {
+            background: rgba(245, 230, 232, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: rgba(245, 230, 232, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.15);
+        }
+
+        .nav-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--text-primary);
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 430px) {
+            .app-container {
+                max-width: 100%;
+            }
+            
+            .welcome-title {
+                font-size: 24px;
+            }
+            
+            .main-content {
+                padding: var(--spacing-md) var(--spacing-sm);
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-section,
+        .feature-card {
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .feature-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        /* 加载状态 */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Header样式调整 */
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+            border-bottom: 1px solid rgba(123, 90, 89, 0.1);
+            box-shadow: 0 2px 8px rgba(123, 90, 89, 0.1);
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-family: 'Agbalumo', cursive;
+            font-size: 20px;
+            color: #7B5A59;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .header-actions {
+            position: absolute;
+            right: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        /* 搜索区域样式 */
+        .search-section {
+            padding: 12px 20px 8px 20px;
+            background: transparent;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        /* 筛选区域 */
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        /* 筛选图标单独定位 */
+        .filter-icon-standalone {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: calc(var(--spacing-sm) + 6px);
+            z-index: 10;
+            width: 32px;
+            height: 32px;
+        }
+
+        .search-container {
+            position: relative;
+            margin: 0 0 var(--spacing-md) 0;
+            width: 100%;
+            padding-left: 0;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 42px;
+            border: 2px solid #FFC9C7;
+            border-radius: 21px;
+            padding: 0 50px 0 20px;
+            font-size: 16px;
+            font-family: 'Artifika', serif;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-input:focus {
+            border-color: #F0D6DA;
+            box-shadow: 0 4px 12px rgba(245, 230, 232, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-secondary);
+        }
+
+        /* 分类筛选按钮 */
+        .category-filters {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 8px;
+            padding: 0;
+            flex: 1;
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+            margin-left: 44px; /* 为放大的筛选图标留出更多空间 */
+        }
+
+        .category-filters::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+        .category-filters::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+        .filter-btn {
+            background: white;
+            border: 1px solid #FFC9C7;
+            border-radius: 16px;
+            width: 84px;
+            height: 32px;
+            font-size: 12px;
+            font-family: 'Artifika', serif;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-btn.active {
+            background: #FFC9C7;
+            color: #7B5A59;
+            font-weight: 500;
+            border-color: #FFC9C7;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 201, 199, 0.3);
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 201, 199, 0.3);
+        }
+
+        /* 筛选图标 */
+        .filter-icon-container {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            margin-right: var(--spacing-sm);
+        }
+
+        .filter-icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-icon {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        /* 供货商列表样式 */
+        .supplier-list {
+            padding: 0 20px 120px 20px;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .supplier-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 0 0 var(--spacing-md) 0;
+            width: 100%;
+            height: 283px;
+            box-shadow: 0 4px 20px rgba(245, 230, 232, 0.3);
+            border: 2px solid #FFC9C7;
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .supplier-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 230, 232, 0.4);
+        }
+
+        /* 顶部行 - Logo + 标题+评分 + 电话图标 */
+        .supplier-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        /* Logo区域 */
+        .supplier-logo {
+            flex-shrink: 0;
+        }
+
+        .avatar-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* 标题和评分区域 */
+        .supplier-title-rating {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .supplier-name {
+            font-family: 'Artifika', serif;
+            font-size: 14px;
+            color: #7B5A59;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .supplier-rating .stars {
+            color: #FF6B6B;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        /* 电话按钮 - 右上角 */
+        .phone-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .phone-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .phone-icon {
+            width: 20px;
+            height: 20px;
+            fill: #7B5A59;
+        }
+
+        /* 中间行 - 文字说明（左） + 地图（右） */
+        .supplier-content {
+            display: flex;
+            gap: 16px;
+            flex: 1;
+        }
+
+        /* 文字描述区域 */
+        .supplier-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            justify-content: flex-start;
+        }
+
+        .info-item {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* 地图区域 - 右侧 */
+        .supplier-map {
+            width: 40%;
+            height: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .map-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 筛选标签样式 */
+
+        .filter-chips {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-right: 4px;
+        }
+
+        .filter-chips::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-chip {
+            background: white;
+            border: 1px solid #FFC9C7;
+            border-radius: 999px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-family: 'Artifika', serif;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            flex: 0 0 auto;
+            font-weight: 400;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-chip.active {
+            background: #FFC9C7;
+            color: white;
+            border-color: #FFC9C7;
+            font-weight: 500;
+        }
+
+        .filter-chip:hover {
+            background: rgba(255, 201, 199, 0.3);
+        }
+
+        /* Find new ideas 按钮样式 */
+        .action-section {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 0;
+            margin-top: 0;
+        }
+
+        .find-ideas-btn {
+            height: 42px;
+            background: linear-gradient(135deg, #F2C2C6, #F5D6DA);
+            border: none;
+            border-radius: 21px;
+            color: #7B5A59;
+            font-size: 14px;
+            font-family: 'Artifika', serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(242, 194, 198, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 18px;
+            white-space: nowrap;
+        }
+
+        .idea-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .find-ideas-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(242, 194, 198, 0.4);
+        }
+
+        .find-ideas-btn:active {
+            transform: translateY(0);
+        }
+
+        .find-ideas-btn.refreshing {
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 灵感瀑布流样式 */
+        .gallery-section {
+            margin-top: 8px;
+        }
+
+        .gallery-grid {
+            column-count: 2;
+            column-gap: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 创建两列布局，让Find new ideas按钮与左列对齐 */
+        .gallery-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .gallery-column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(245, 230, 232, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            break-inside: avoid;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 230, 232, 0.4);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 爱心按钮样式 */
+        .heart-btn {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border: none;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .heart-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }
+
+        .heart-btn.liked {
+            background: white;
+        }
+
+        .heart-btn.liked .heart-icon {
+            fill: #FF6B6B;
+        }
+
+        .heart-icon {
+            width: 16px;
+            height: 16px;
+            fill: #7B5A59;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="page-title">Inspiration</h1>
+            <div class="header-actions">
+                <button class="icon-button" aria-label="通知">
+                    <img src="设计图/通知icon2.png" alt="通知" class="notification-icon">
+                </button>
+                <button class="icon-button" aria-label="用户头像">
+                    <img src="设计图/我的头像.png" alt="用户" class="header-icon">
+                </button>
+            </div>
+        </header>
+
+        <!-- 主要内容 -->
+        <main class="main-content">
+            <!-- 筛选标签区域 -->
+            <section class="filter-section">
+                <div class="filter-chips">
+                    <img src="设计图/筛选icon.png" alt="Filter" class="filter-icon">
+                    <button class="filter-chip" onclick="toggleChip(this)">T-shirt</button>
+                    <button class="filter-chip active" onclick="toggleChip(this)">Skirt</button>
+                    <button class="filter-chip" onclick="toggleChip(this)">Shorts</button>
+                    <button class="filter-chip" onclick="toggleChip(this)">Socks</button>
+                    <button class="filter-chip" onclick="toggleChip(this)">Vest</button>
+                </div>
+            </section>
+
+            <!-- 灵感瀑布流 -->
+            <section class="gallery-section">
+                <div class="gallery-columns">
+                    <!-- 左列 -->
+                    <div class="gallery-column">
+                        <div class="gallery-item">
+                            <img src="设计图/来源1.png" alt="Inspiration 1" class="gallery-image">
+                            <button class="heart-btn liked" onclick="toggleHeart(this)">
+                                <svg viewBox="0 0 24 24" class="heart-icon">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="设计图/来源3.png" alt="Inspiration 3" class="gallery-image">
+                            <button class="heart-btn" onclick="toggleHeart(this)">
+                                <svg viewBox="0 0 24 24" class="heart-icon">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="设计图/来源5.png" alt="Inspiration 5" class="gallery-image">
+                            <button class="heart-btn" onclick="toggleHeart(this)">
+                                <svg viewBox="0 0 24 24" class="heart-icon">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 右列 -->
+                    <div class="gallery-column">
+                        <!-- Find new ideas 按钮 -->
+                        <div class="action-section">
+                            <button class="find-ideas-btn" onclick="findNewIdeas()">
+                                <img src="设计图/idea icon.png" alt="Idea" class="idea-icon">
+                                Find new ideas
+                            </button>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="设计图/来源2.png" alt="Inspiration 2" class="gallery-image">
+                            <button class="heart-btn liked" onclick="toggleHeart(this)">
+                                <svg viewBox="0 0 24 24" class="heart-icon">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="设计图/来源4.png" alt="Inspiration 4" class="gallery-image">
+                            <button class="heart-btn" onclick="toggleHeart(this)">
+                                <svg viewBox="0 0 24 24" class="heart-icon">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="设计图/来源6.png" alt="Inspiration 6" class="gallery-image">
+                            <button class="heart-btn" onclick="toggleHeart(this)">
+                                <svg viewBox="0 0 24 24" class="heart-icon">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+
+        <!-- 底部导航栏 -->
+        <nav class="bottom-nav">
+            <div class="nav-item" onclick="setActiveNav(this, 'home')">
+                <img src="设计图/home icon.png" alt="首页" class="nav-icon">
+                <span class="nav-label">Home</span>
+            </div>
+            <div class="nav-item active" onclick="setActiveNav(this, 'inspiration')">
+                <img src="设计图/Inspiration icon.png" alt="灵感" class="nav-icon">
+                <span class="nav-label">Inspiration</span>
+            </div>
+            <div class="nav-item" onclick="setActiveNav(this, 'supplier')">
+                <img src="设计图/Supplier icon.png" alt="供应商" class="nav-icon">
+                <span class="nav-label">Supplier</span>
+            </div>
+            <div class="nav-item" onclick="setActiveNav(this, 'account')">
+                <img src="设计图/Account icon.png" alt="账户" class="nav-icon">
+                <span class="nav-label">Account</span>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // 导航功能
+        function setActiveNav(element, page) {
+            // 添加点击反馈
+            element.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                element.style.transform = '';
+            }, 100);
+            
+            // 移除所有active状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 添加active状态到当前项
+            element.classList.add('active');
+            
+            // 根据页面进行导航
+            switch(page) {
+                case 'home':
+                    setTimeout(() => {
+                        window.location.href = '主页.html';
+                    }, 150);
+                    break;
+                case 'inspiration':
+                    // 当前页面，不需要导航
+                    break;
+                case 'supplier':
+                    setTimeout(() => {
+                        window.location.href = '供货商.html';
+                    }, 150);
+                    break;
+                case 'account':
+                    setTimeout(() => {
+                        window.location.href = '个人.html';
+                    }, 150);
+                    break;
+            }
+        }
+
+        // 功能卡片导航
+        function navigateToInspiration() {
+            console.log('导航到灵感收集页面');
+            window.location.href = '灵感收集分析1.html';
+        }
+
+        function navigateToAnalysis() {
+            console.log('导航到服装分析页面');
+            // 这里可以添加页面跳转逻辑
+        }
+
+        // 联系供货商功能
+        function contactSupplier(supplierName) {
+            console.log(`联系供货商: ${supplierName}`);
+            // 这里可以添加联系供货商的逻辑
+            alert(`正在联系 ${supplierName}...`);
+        }
+
+        // 添加触摸反馈和动画效果
+        document.querySelectorAll('.feature-card').forEach(element => {
+            element.addEventListener('touchstart', function() {
+                this.style.transform = 'translateY(0) scale(0.95)';
+            });
+            
+            element.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+
+            // 添加点击波纹效果
+            element.addEventListener('click', function(e) {
+                const ripple = document.createElement('div');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                `;
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // 添加波纹动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 联系供货商功能
+        function contactSupplier(supplierName) {
+            console.log('联系供货商:', supplierName);
+            alert(`正在联系 ${supplierName}...`);
+        }
+
+        // 筛选按钮切换功能
+        function toggleFilter(button) {
+            // 移除所有按钮的active状态
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 添加active状态到当前按钮
+            button.classList.add('active');
+            
+            // 这里可以添加筛选逻辑
+            console.log('筛选:', button.textContent);
+        }
+
+        // 筛选图标功能
+        function showFilterOptions() {
+            console.log('显示筛选选项');
+            // 这里可以添加筛选选项的显示逻辑
+        }
+
+        // 筛选标签切换功能
+        function toggleChip(button) {
+            // 移除所有标签的active状态
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            
+            // 添加active状态到当前标签
+            button.classList.add('active');
+            
+            // 这里可以添加筛选逻辑
+            console.log('筛选标签:', button.textContent);
+        }
+
+        // Find new ideas 按钮功能
+        function findNewIdeas() {
+            console.log('寻找新灵感');
+            
+            // 添加刷新动画
+            const button = event.target.closest('.find-ideas-btn');
+            const icon = button.querySelector('.idea-icon');
+            
+            // 添加旋转动画类
+            button.classList.add('refreshing');
+            icon.style.animation = 'spin 1s linear infinite';
+            
+            // 模拟刷新过程
+            setTimeout(() => {
+                // 移除动画
+                button.classList.remove('refreshing');
+                icon.style.animation = '';
+                
+                // 添加闪烁效果
+                addFlashEffect();
+                
+                console.log('刷新完成');
+            }, 2000);
+        }
+
+        // 添加闪烁效果
+        function addFlashEffect() {
+            // 创建闪烁遮罩层
+            const flashOverlay = document.createElement('div');
+            flashOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.9);
+                z-index: 9999;
+                pointer-events: none;
+                animation: flashEffect 1s ease-out forwards;
+            `;
+            
+            // 添加闪烁动画CSS
+            if (!document.getElementById('flash-animation-style')) {
+                const style = document.createElement('style');
+                style.id = 'flash-animation-style';
+                style.textContent = `
+                    @keyframes flashEffect {
+                        0% {
+                            opacity: 0;
+                            transform: scale(1);
+                        }
+                        20% {
+                            opacity: 1;
+                            transform: scale(1.02);
+                        }
+                        40% {
+                            opacity: 0.8;
+                            transform: scale(1);
+                        }
+                        60% {
+                            opacity: 1;
+                            transform: scale(1.01);
+                        }
+                        80% {
+                            opacity: 0.9;
+                            transform: scale(1);
+                        }
+                        100% {
+                            opacity: 0;
+                            transform: scale(1);
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            // 添加到页面
+            document.body.appendChild(flashOverlay);
+            
+            // 1秒后移除
+            setTimeout(() => {
+                if (flashOverlay.parentNode) {
+                    flashOverlay.parentNode.removeChild(flashOverlay);
+                }
+            }, 1000);
+        }
+
+        // 爱心按钮切换功能
+        function toggleHeart(button) {
+            button.classList.toggle('liked');
+            
+            if (button.classList.contains('liked')) {
+                console.log('已收藏');
+            } else {
+                console.log('取消收藏');
+            }
+        }
+
+    </script>
+</body>
+</html>

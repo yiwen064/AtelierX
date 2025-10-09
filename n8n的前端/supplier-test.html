@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>供应商分析服务测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 8px;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            padding: 25px;
+        }
+        
+        .form-section, .result-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .form-section h2, .result-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 8px;
+        }
+        
+        .url-info {
+            background: #e3f2fd;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .url-info strong {
+            color: #1976D2;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .url-info code {
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            display: block;
+            font-size: 12px;
+            word-break: break-all;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+        }
+        
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .response-content {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .quick-test {
+            background: #e8f5e8;
+            border: 1px solid #4CAF50;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .quick-test h3 {
+            color: #2e7d32;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 供应商分析服务测试</h1>
+            <p>验证 n8n Cloud 工作流 API 端点</p>
+        </div>
+        
+        <div class="content">
+            <div class="form-section">
+                <h2>📋 测试配置</h2>
+                
+                <div class="url-info">
+                    <strong>API 端点:</strong>
+                    <code>https://lynn-cafa-system.app.n8n.cloud/webhook/api/supplier-query</code>
+                </div>
+                
+                <div class="quick-test">
+                    <h3>🚀 快速测试</h3>
+                    <p>点击"测试API"按钮使用预设参数快速验证服务可用性</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="material">面料类型:</label>
+                    <select id="material">
+                        <option value="cotton blend">棉混纺</option>
+                        <option value="silk satin">丝绸缎面</option>
+                        <option value="polyester blend">聚酯纤维混纺</option>
+                        <option value="denim">牛仔布</option>
+                        <option value="linen">亚麻</option>
+                        <option value="cotton fleece">棉绒布</option>
+                        <option value="leather">皮革</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="color">颜色:</label>
+                    <input type="text" id="color" value="navy blue" placeholder="例: 深蓝色">
+                </div>
+                
+                <div class="form-group">
+                    <label for="weight">克重:</label>
+                    <input type="text" id="weight" value="200gsm" placeholder="例: 200gsm">
+                </div>
+                
+                <div class="form-group">
+                    <label for="budget">预算 (元):</label>
+                    <input type="number" id="budget" value="50" placeholder="单价预算">
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity">数量 (件):</label>
+                    <input type="number" id="quantity" value="1000" placeholder="采购数量">
+                </div>
+                
+                <div class="form-group">
+                    <label for="location">地区偏好:</label>
+                    <input type="text" id="location" value="江苏" placeholder="例: 江苏">
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="testAPI()">🚀 测试 API</button>
+                    <button class="btn btn-secondary" onclick="clearResults()">🗑️ 清空结果</button>
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <h2>📊 测试结果</h2>
+                <div id="status"></div>
+                <div id="response" class="response-content" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://lynn-cafa-system.app.n8n.cloud/webhook/api/supplier-query';
+        
+        async function testAPI() {
+            const statusDiv = document.getElementById('status');
+            const responseDiv = document.getElementById('response');
+            
+            // 显示加载状态
+            statusDiv.className = 'status loading';
+            statusDiv.textContent = '🔄 正在连接 n8n Cloud 服务...';
+            responseDiv.style.display = 'none';
+            
+            // 收集表单数据
+            const requestData = {
+                material: document.getElementById('material').value,
+                color: document.getElementById('color').value,
+                weight: document.getElementById('weight').value,
+                budget: parseInt(document.getElementById('budget').value) || 0,
+                quantity: parseInt(document.getElementById('quantity').value) || 1000,
+                location: document.getElementById('location').value
+            };
+            
+            try {
+                console.log('🚀 发送请求到:', API_URL);
+                console.log('📦 请求数据:', requestData);
+                
+                const startTime = Date.now();
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                
+                console.log('📡 响应状态:', response.status);
+                console.log('⏱️ 响应时间:', responseTime + 'ms');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ 响应数据:', data);
+                    
+                    // 显示成功状态
+                    statusDiv.className = 'status success';
+                    statusDiv.innerHTML = `
+                        ✅ n8n Cloud API 测试成功！<br>
+                        📡 状态码: ${response.status}<br>
+                        ⏱️ 响应时间: ${responseTime}ms<br>
+                        📅 测试时间: ${new Date().toLocaleString()}
+                    `;
+                    
+                    // 格式化并显示响应内容
+                    const formattedResponse = formatAPIResponse(data, response, responseTime);
+                    responseDiv.textContent = formattedResponse;
+                    responseDiv.style.display = 'block';
+                    
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}\n${errorText}`);
+                }
+                
+            } catch (error) {
+                console.error('❌ API 测试失败:', error);
+                
+                // 显示错误状态
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = `
+                    ❌ n8n Cloud API 测试失败<br>
+                    🚫 错误: ${error.message}<br>
+                    📅 测试时间: ${new Date().toLocaleString()}
+                `;
+                
+                // 显示错误详情和解决方案
+                const errorDetails = `
+❌ 连接失败详情:
+==================
+错误类型: ${error.name}
+错误信息: ${error.message}
+API 端点: ${API_URL}
+请求数据: ${JSON.stringify(requestData, null, 2)}
+
+🔧 可能的解决方案:
+==================
+1. 检查 n8n Cloud 工作流是否已激活
+2. 确认 webhook 路径是否正确: /webhook/api/supplier-query
+3. 验证工作流中的 webhook 节点配置
+4. 检查网络连接和防火墙设置
+5. 确认 n8n Cloud 服务状态是否正常
+
+📋 验证步骤:
+==================
+1. 登录 n8n Cloud 控制台
+2. 检查工作流 "My workflow 17" 是否激活
+3. 确认 "供应链查询 Webhook1" 节点配置
+4. 测试工作流手动执行是否正常
+                `;
+                
+                responseDiv.textContent = errorDetails;
+                responseDiv.style.display = 'block';
+            }
+        }
+        
+        function formatAPIResponse(data, response, responseTime) {
+            const headers = {};
+            response.headers.forEach((value, key) => {
+                headers[key] = value;
+            });
+            
+            return `
+🎉 n8n Cloud API 响应成功!
+==========================================
+📡 HTTP 状态: ${response.status} ${response.statusText}
+⏱️ 响应时间: ${responseTime}ms
+📅 测试时间: ${new Date().toLocaleString()}
+
+📋 响应头信息:
+${JSON.stringify(headers, null, 2)}
+
+📦 响应内容:
+==========================================
+${JSON.stringify(data, null, 2)}
+
+✅ 内容验证:
+==========================================
+数据类型: ${typeof data}
+包含 success 字段: ${data.hasOwnProperty('success') ? '✅ 是' : '❌ 否'}
+包含 analysis 字段: ${data.hasOwnProperty('analysis') ? '✅ 是' : '❌ 否'}  
+包含 timestamp 字段: ${data.hasOwnProperty('timestamp') ? '✅ 是' : '❌ 否'}
+
+${data.success ? '🎯 API 返回成功状态' : '⚠️ API 返回失败状态'}
+${data.analysis ? '📝 包含分析内容 (' + data.analysis.length + ' 字符)' : '❌ 缺少分析内容'}
+${data.timestamp ? '⏰ 时间戳: ' + data.timestamp : '❌ 缺少时间戳'}
+
+🔍 供应商分析预览:
+==========================================
+${data.analysis ? data.analysis.substring(0, 500) + (data.analysis.length > 500 ? '...\n\n[内容已截断，完整内容请查看上方JSON]' : '') : '无分析内容'}
+            `;
+        }
+        
+        function clearResults() {
+            document.getElementById('status').textContent = '';
+            document.getElementById('status').className = '';
+            document.getElementById('response').style.display = 'none';
+            document.getElementById('response').textContent = '';
+        }
+        
+        // 页面加载完成提示
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 供应商分析服务测试页面已加载');
+            console.log('🔗 API 端点:', API_URL);
+            console.log('📋 准备测试 n8n Cloud 工作流...');
+        });
+    </script>
+</body>
+</html>

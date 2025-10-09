@@ -1,0 +1,1012 @@
+{
+  "name": "My workflow 17",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/u/1/folders/1IqHYjrTjxVJ_DqtLRc0PW5aoWPNuixxU",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "id": "4e88df87-9ea5-439e-ae53-0da89f00c022",
+      "name": "写入日志(可选)1",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -48,
+        -2736
+      ],
+      "typeVersion": 4,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RKH9yhZxmWCz4T3d",
+          "name": "Google Sheets account 4"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "workshop20250708",
+          "mode": "list",
+          "cachedResultName": "workshop20250708"
+        },
+        "options": {
+          "pineconeNamespace": "ns_04"
+        }
+      },
+      "id": "1c8d4669-8f2b-4ca5-b833-4b3d9122fc8a",
+      "name": "存储向量到Pinecone1",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "position": [
+        -432,
+        -2736
+      ],
+      "typeVersion": 1.1,
+      "credentials": {
+        "pineconeApi": {
+          "id": "0BH74Kjg8OdmzZqM",
+          "name": "pinecone-workshop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "6dbba185-8cc1-4cfb-9afe-88fca6108b96",
+      "name": "OpenAI 嵌入模型（存储）1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        -624,
+        -2560
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "i9YtN4AdSgS8mWcx",
+          "name": "openai-workshop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "3a44c2ec-5111-4067-a49a-43aa2aa3a02e",
+      "name": "文本分割器1",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        -464,
+        -2384
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "id": "71315158-85fe-44d1-afa9-6bf0d6ce449d",
+      "name": "文档加载器1",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        -464,
+        -2560
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {}
+      },
+      "id": "43fa95b7-60cd-4e48-b7e3-197bc052f1da",
+      "name": "下载文件1",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        -768,
+        -2736
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vbdaWrMUy7QV10oi",
+          "name": "drive-workshop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1IqHYjrTjxVJ_DqtLRc0PW5aoWPNuixxU",
+          "mode": "list",
+          "cachedResultName": "ns_04",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1IqHYjrTjxVJ_DqtLRc0PW5aoWPNuixxU"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "52760fe8-8d28-449f-935e-6966a42bc27a",
+      "name": "Google Drive 触发器1",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        -1136,
+        -2736
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vbdaWrMUy7QV10oi",
+          "name": "drive-workshop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=你是一位专业的供应链顾问。请根据以下需求分析并推荐合适的供应商：\n\n用户需求：{{ $json.query }}\n\n面料：{{ $json.material }}\n颜色：{{ $json.color }}\n克重：{{ $json.weight }}\n预算：{{ $json.budget }}元\n数量：{{ $json.quantity }}件\n地区偏好：{{ $json.location }}\n\n可用供应商数据库：\n{{ $json.supplierDatabase }}\n\n请从以下维度进行专业分析：\n1. 推荐3-5个最适合的供应商（从上述数据库中筛选）\n2. 价格对比分析\n3. 质量评估\n4. 交货期分析\n5. 采购建议\n6. 潜在风险提示\n\n请以结构化的方式输出分析结果。",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -544,
+        -2064
+      ],
+      "id": "b4742457-f27f-41e8-ac76-de85f9387dfb",
+      "name": "AI Agent 供应商分析"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 供应商分析结果直接输出\nconst input = $input.first().json;\nconst analysis = input.output || input.text || input.message || '';\n\n// 直接返回完整分析，让前端显示\nconst result = {\n  success: true,\n  analysis: analysis,\n  timestamp: new Date().toISOString()\n};\n\nreturn [{ json: result }];"
+      },
+      "id": "ec5cd363-81e2-4845-9a68-2800300b0034",
+      "name": "格式化输出结果",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -240,
+        -2064
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -96,
+        -2064
+      ],
+      "id": "a44c7033-062a-494e-9259-52c819f24e46",
+      "name": "返回结果",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api/supplier-query",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "975aa5e8-3a13-40f8-8c03-1f84f2788273",
+      "name": "供应链查询 Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -960,
+        -2064
+      ],
+      "typeVersion": 2.1,
+      "webhookId": "supplier-webhook",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-3-5-sonnet-20241022",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 3.5 (New)"
+        },
+        "options": {}
+      },
+      "id": "63f6c867-99c4-4922-8500-ea3850250fcd",
+      "name": "Claude 供应商分析1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "position": [
+        -544,
+        -1872
+      ],
+      "typeVersion": 1.3,
+      "credentials": {
+        "anthropicApi": {
+          "id": "2yygkXpqmsCmEtAB",
+          "name": "claude-workshop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 供应链查询请求验证和测试数据\nconst rawInput = $input.first().json;\nconst input = rawInput.body || rawInput;\n\n// 测试供应商数据（10个供应商）\nconst testSuppliers = [\n  {id: \"supplier_001\", name: \"优质棉纺厂\", material: \"cotton blend\", color: \"navy blue\", weight: \"200gsm\", price: 45, quality: \"A+\", delivery: \"7-10天\", location: \"江苏南通\", rating: 95},\n  {id: \"supplier_002\", name: \"丝绸专营店\", material: \"silk satin\", color: \"ivory white\", weight: \"120gsm\", price: 120, quality: \"A+\", delivery: \"5-7天\", location: \"浙江杭州\", rating: 98},\n  {id: \"supplier_003\", name: \"运动面料厂\", material: \"polyester blend\", color: \"black\", weight: \"180gsm\", price: 35, quality: \"A\", delivery: \"10-14天\", location: \"广东佛山\", rating: 92},\n  {id: \"supplier_004\", name: \"牛仔布供应商\", material: \"denim\", color: \"indigo blue\", weight: \"300gsm\", price: 55, quality: \"A\", delivery: \"14-21天\", location: \"山东青岛\", rating: 88},\n  {id: \"supplier_005\", name: \"亚麻面料商\", material: \"linen\", color: \"natural beige\", weight: \"160gsm\", price: 65, quality: \"A+\", delivery: \"7-10天\", location: \"河南郑州\", rating: 94},\n  {id: \"supplier_006\", name: \"针织面料厂\", material: \"cotton fleece\", color: \"grey\", weight: \"220gsm\", price: 38, quality: \"A\", delivery: \"5-8天\", location: \"江苏苏州\", rating: 90},\n  {id: \"supplier_007\", name: \"皮革供应商\", material: \"leather\", color: \"brown\", weight: \"1.2mm\", price: 180, quality: \"A+\", delivery: \"21-28天\", location: \"河北保定\", rating: 96},\n  {id: \"supplier_008\", name: \"帆布专营\", material: \"canvas\", color: \"olive green\", weight: \"400gsm\", price: 42, quality: \"A\", delivery: \"10-12天\", location: \"福建泉州\", rating: 89},\n  {id: \"supplier_009\", name: \"雪纺面料商\", material: \"cotton voile\", color: \"floral print\", weight: \"80gsm\", price: 28, quality: \"B+\", delivery: \"7-10天\", location: \"浙江绍兴\", rating: 85},\n  {id: \"supplier_010\", name: \"格子布供应商\", material: \"cotton gingham\", color: \"red check\", weight: \"140gsm\", price: 32, quality: \"A\", delivery: \"5-7天\", location: \"山东潍坊\", rating: 91}\n];\n\n// 将供应商数组格式化为JSON字符串\nconst supplierDatabaseText = JSON.stringify(testSuppliers, null, 2);\n\n// 验证输入数据\nconst validatedInput = {\n  material: (input && input.material) ? String(input.material) : \"未指定面料\",\n  color: (input && input.color) ? String(input.color) : \"未指定颜色\",\n  weight: (input && input.weight) ? String(input.weight) : \"未指定克重\",\n  budget: (input && input.budget) ? Number(input.budget) : 0,\n  quantity: (input && input.quantity) ? Number(input.quantity) : 1000,\n  location: (input && input.location) ? String(input.location) : \"全国\",\n  query: `寻找${(input && input.material) || '面料'}供应商，颜色：${(input && input.color) || '不限'}，克重：${(input && input.weight) || '不限'}，预算：${(input && input.budget) || '不限'}，地区：${(input && input.location) || '全国'}`,\n  supplierDatabase: supplierDatabaseText\n};\n\nreturn [{ json: validatedInput }];"
+      },
+      "id": "68b85b50-6f7c-4a6e-821a-3af65585df28",
+      "name": "验证供应商输入1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -768,
+        -2064
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.question }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -272,
+        -1456
+      ],
+      "id": "22a26950-8a3f-4a7a-9dc5-32ef1551f5f1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 知识问答结果格式化\nconst input = $input.first().json;\nconst answer = input.output || input.text || input.message || '';\n\n// 基础结构\nconst result = {\n  success: true,\n  answer: answer,\n  metadata: {\n    confidence: 'high',\n    timestamp: new Date().toISOString(),\n    source: 'ai_assistant'\n  }\n};\n\n// 智能提取：如果有 Markdown 标题，提取主要内容\nconst sections = [];\nconst headingMatches = answer.matchAll(/^#{1,3}\\s+(.+)$/gm);\nfor (const match of headingMatches) {\n  sections.push(match[1].trim());\n}\n\nif (sections.length > 0) {\n  result.metadata.sections = sections;\n}\n\n// 提取关键要点（数字列表或项目符号）\nconst keyPoints = [];\nconst listMatches = answer.matchAll(/^[\\*\\-]\\s+\\*\\*(.+?)\\*\\*[：:]?(.+?)$/gm);\nfor (const match of listMatches) {\n  keyPoints.push({\n    title: match[1].trim(),\n    content: match[2].trim()\n  });\n}\n\nif (keyPoints.length > 0) {\n  result.metadata.keyPoints = keyPoints;\n}\n\nreturn [{ json: result }];"
+      },
+      "id": "d4fa8217-0cb3-49ff-8061-7b364bc9f1a0",
+      "name": "格式化问答输出1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        208,
+        -1456
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4"
+        },
+        "options": {}
+      },
+      "id": "938776a5-bf48-4698-8e4e-7e8323b29a03",
+      "name": "Claude 知识问答1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "position": [
+        -272,
+        -1264
+      ],
+      "typeVersion": 1.3,
+      "credentials": {
+        "anthropicApi": {
+          "id": "2yygkXpqmsCmEtAB",
+          "name": "claude-workshop"
+        }
+      },
+      "notes": "={{ $('知识库检索').item.json.documents }} "
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "knowledge_base",
+        "toolDescription": "检索专业知识文档，用于回答设计相关问题",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "workshop20250708",
+          "mode": "list",
+          "cachedResultName": "workshop20250708"
+        },
+        "options": {
+          "pineconeNamespace": "ns_04"
+        }
+      },
+      "id": "7df9122a-4d2f-48da-984b-fa66c7edd7dc",
+      "name": "知识库检索1",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "position": [
+        -144,
+        -1232
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "pineconeApi": {
+          "id": "0BH74Kjg8OdmzZqM",
+          "name": "pinecone-workshop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "4ad35521-5c68-473b-a9ca-0decc62e8929",
+      "name": "OpenAI 嵌入模型1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        -144,
+        -1072
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "i9YtN4AdSgS8mWcx",
+          "name": "openai-workshop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 知识问答请求验证\nconst input = $input.first().json;\n\n// 默认测试问题\nconst defaultQuestion = \"针织面料在运动装中的应用注意事项有哪些？\";\n\n// 统一返回结构\nconst validatedInput = {\n  question: input.question || defaultQuestion,\n  context: input.context || \"\",\n  category: input.category || \"general\"\n};\n\nreturn [{ json: validatedInput }];"
+      },
+      "id": "586f2d62-0ef6-4448-8f43-76dc11fa5355",
+      "name": "验证问答输入1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -640,
+        -1456
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api/knowledge-qa",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "06a3f024-abf1-439c-92ee-a4651b91262e",
+      "name": "知识问答 Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -1104,
+        -1456
+      ],
+      "typeVersion": 1,
+      "webhookId": "knowledge-qa-webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        416,
+        -1456
+      ],
+      "id": "301c0171-9fd3-4338-9a00-2607e07b0564",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.description }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        -640
+      ],
+      "id": "c082e3e0-a1b9-4923-a4fd-8f9c4bb46a03",
+      "name": "AI Agent3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 灵感分析结果格式化\nconst input = $input.first().json;\nconst analysis = input.output || input.text || input.message || '';\n\n// 简化输出结构，完整保留 Markdown 格式\nconst result = {\n  success: true,\n  analysis: analysis,\n  metadata: {\n    timestamp: new Date().toISOString(),\n    source: 'ai_inspiration_analysis',\n    confidence: 'high'\n  }\n};\n\n// 智能提取：如果有 Markdown 标题，提取主要章节\nconst sections = [];\nconst headingMatches = analysis.matchAll(/^#{1,3}\\s+(.+)$/gm);\nfor (const match of headingMatches) {\n  sections.push(match[1].trim());\n}\n\nif (sections.length > 0) {\n  result.metadata.sections = sections;\n}\n\n// 智能提取：关键设计元素（可选）\nconst designElements = [];\nconst bulletMatches = analysis.matchAll(/^[\\*\\-]\\s+\\*\\*(.+?)\\*\\*[：:]?(.+?)$/gm);\nfor (const match of bulletMatches) {\n  designElements.push({\n    element: match[1].trim(),\n    description: match[2].trim()\n  });\n}\n\nif (designElements.length > 0) {\n  result.metadata.designElements = designElements;\n}\n\nreturn [{ json: result }];"
+      },
+      "id": "128de6b6-1121-44ab-bd5a-87a23166c6a4",
+      "name": "格式化灵感分析结果1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        416,
+        -624
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-3-5-sonnet-20241022",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 3.5 (New)"
+        },
+        "options": {}
+      },
+      "id": "42cf2647-6a84-423b-8f15-e64bf014c7f2",
+      "name": "Claude 灵感分析1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "position": [
+        -80,
+        -464
+      ],
+      "typeVersion": 1.3,
+      "credentials": {
+        "anthropicApi": {
+          "id": "2yygkXpqmsCmEtAB",
+          "name": "claude-workshop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "mimeType=\"application/pdf\" and \"1IqHYjrTjxVJ_DqtLRc0PW5aoWPNuixxU\" in parents",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1IqHYjrTjxVJ_DqtLRc0PW5aoWPNuixxU",
+            "mode": "list",
+            "cachedResultName": "ns_04",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1IqHYjrTjxVJ_DqtLRc0PW5aoWPNuixxU"
+          }
+        },
+        "options": {}
+      },
+      "id": "487e208e-3570-4f72-b0c7-5edd296f7c73",
+      "name": "Google Drive 趋势搜索1",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        -32,
+        -800
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vbdaWrMUy7QV10oi",
+          "name": "drive-workshop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 灵感收集请求验证\nconst input = $input.first().json;\n\n// 默认测试灵感\nconst defaultInspiration = {\n  keywords: \"vintage sporty\",\n  category: \"outerwear\",\n  season: \"autumn\",\n  description: \"复古运动风，oversized廓形，拼接设计\"\n};\n\n// 统一返回结构 - 确保总是有 description 字段\nconst validatedInput = {\n  keywords: input.keywords || defaultInspiration.keywords,\n  category: input.category || defaultInspiration.category,\n  season: input.season || defaultInspiration.season,\n  description: input.description || \n               (input.keywords ? `${input.keywords}风格的服装设计灵感` : defaultInspiration.description)\n};\n\nreturn [{ json: validatedInput }];"
+      },
+      "id": "deecbe91-3aa0-42e5-913c-b802596d2b36",
+      "name": "验证灵感输入1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -528,
+        -640
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api/inspiration-collect",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "12af41f7-2ae9-4a49-bb25-9bcba409ac47",
+      "name": "灵感收集 Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -928,
+        -640
+      ],
+      "typeVersion": 1,
+      "webhookId": "inspiration-webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        624,
+        -624
+      ],
+      "id": "87e51074-ed22-4dca-9fb9-3126bf92f73c",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api/pattern-risk-analysis",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "3dde391b-2708-4a78-b8c2-1f93a32136a2",
+      "name": "打版帮助Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -816,
+        -32
+      ],
+      "typeVersion": 2.1,
+      "webhookId": "pattern-risk-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 检测图片上传，直接返回 mock data（演示用）\nconst rawInput = $input.first().json;\n\n// 检查是否上传了图片（multipart/form-data 格式）\nconst hasImage = rawInput.body && (rawInput.body.fileName || rawInput.body.fileType);\n\n// Mock Data - 假装是从图片中分析出来的设计信息\nconst mockData = {\n  description: \"oversized工装夹克，宽松版型，多口袋拼接设计\",\n  image: hasImage ? \"uploaded\" : null,\n  style: \"street wear\",\n  material: \"cotton blend\",\n  complexity: \"medium-high\"\n};\n\nreturn [{ json: mockData }];"
+      },
+      "id": "ec489c00-e799-407f-a404-9128fdc24d72",
+      "name": "验证打版输入",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -624,
+        -32
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.description }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -160,
+        -32
+      ],
+      "id": "8d741cee-3d8f-4316-829a-637a98a90463",
+      "name": "AI Agent 打版分析"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-3-5-sonnet-20241022",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 3.5 (New)"
+        },
+        "options": {}
+      },
+      "id": "8af384c7-32be-41e9-a07e-65620e48abfe",
+      "name": "Claude 打版分析",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "position": [
+        -160,
+        128
+      ],
+      "typeVersion": 1.3,
+      "credentials": {
+        "anthropicApi": {
+          "id": "2yygkXpqmsCmEtAB",
+          "name": "claude-workshop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 格式化打版分析结果\nconst input = $input.first().json;\nconst analysis = input.output || input.text || input.message || '';\n\n// 完整保留 Markdown 格式的分析\nconst result = {\n  success: true,\n  analysis: analysis,\n  metadata: {\n    timestamp: new Date().toISOString(),\n    source: 'ai_pattern_analysis',\n    confidence: 'high',\n    hasImageAnalysis: true,\n    analysisType: 'demo_with_fake_image_analysis'\n  }\n};\n\n// 智能提取章节标题\nconst sections = [];\nconst headingRegex = /^#{1,3}\\s+(.+)$/gm;\nlet match;\nwhile ((match = headingRegex.exec(analysis)) !== null) {\n  sections.push(match[1].trim());\n}\n\nif (sections.length > 0) {\n  result.metadata.sections = sections;\n}\n\nreturn [{ json: result }];"
+      },
+      "id": "93f329f5-4bde-4969-8c90-2c9de6b690be",
+      "name": "格式化打版分析结果",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        80,
+        -32
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        272,
+        -32
+      ],
+      "id": "00558619-2e12-4c08-addf-27e5b2132484",
+      "name": "返回结果1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 生成假的图片分析结果（演示用）\nconst input = $input.first().json;\n\n// 预设的图片分析文本，假装是 AI 从图片中分析出来的\nconst fakeImageAnalysis = `## 📸 图片分析结果\n\n**服装类型**: Oversized 工装风格夹克\n\n**款式特点**:\n- 宽松版型设计，街头潮流风格\n- 多口袋拼接工艺（胸前2个贴袋 + 下摆2个斜插袋）\n- 落肩袖设计，增加休闲感\n- 前襟拉链 + 按扣双开合系统\n- 领口可立可翻设计\n\n**面料判断**: \n- 主体面料：厚实棉质斜纹布（约280-320gsm）\n- 拼接部分：尼龙防水面料或帆布\n- 里布：可能需要网眼内衬或保暖夹层\n\n**工艺难点识别**:\n1. **多片拼接** - 前片、后片、袖子多处拼接，需要精准对位\n2. **口袋立体造型** - 贴袋需要打版时计算立体空间\n3. **落肩袖型** - 袖窿弧度需要特殊处理，影响舒适度\n4. **双开合系统** - 拉链和按扣需要精确定位\n5. **拼接线条** - 装饰性拼接线需要保证视觉平衡\n\n**配色**: 军绿色/卡其色主体 + 黑色拼接\n\n**预估版型复杂度**: ⭐⭐⭐⭐ (中高难度)\n`;\n\n// 合并假分析结果 + 用户需求描述\nconst userRequest = input.description || \"评估打版难度和风险\";\nconst combinedDescription = `${fakeImageAnalysis}\n\n---\n\n## 👤 用户需求\n${userRequest}\n\n**风格**: ${input.style}\n**期望面料**: ${input.material}\n\n请基于以上图片分析结果，提供专业的打版风险评估。`;\n\nreturn [{ \n  json: { \n    description: combinedDescription,\n    imageAnalysis: fakeImageAnalysis,\n    style: input.style,\n    material: input.material,\n    hasImage: !!input.image\n  } \n}];"
+      },
+      "id": "26000915-8fdc-44ec-a0ee-a18838c5a866",
+      "name": "生成图片分析",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -400,
+        -32
+      ],
+      "typeVersion": 2
+    }
+  ],
+  "pinData": {
+    "知识问答 Webhook1": [
+      {
+        "json": {
+          "name": "First item",
+          "code": 1
+        }
+      },
+      {
+        "json": {
+          "name": "Second item",
+          "code": 2
+        }
+      }
+    ]
+  },
+  "connections": {
+    "存储向量到Pinecone1": {
+      "main": [
+        [
+          {
+            "node": "写入日志(可选)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI 嵌入模型（存储）1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "存储向量到Pinecone1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "文本分割器1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "文档加载器1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "文档加载器1": {
+      "ai_document": [
+        [
+          {
+            "node": "存储向量到Pinecone1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "下载文件1": {
+      "main": [
+        [
+          {
+            "node": "存储向量到Pinecone1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive 触发器1": {
+      "main": [
+        [
+          {
+            "node": "下载文件1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent 供应商分析": {
+      "main": [
+        [
+          {
+            "node": "格式化输出结果",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "格式化输出结果": {
+      "main": [
+        [
+          {
+            "node": "返回结果",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "供应链查询 Webhook1": {
+      "main": [
+        [
+          {
+            "node": "验证供应商输入1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude 供应商分析1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent 供应商分析",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "验证供应商输入1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent 供应商分析",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "格式化问答输出1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude 知识问答1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "知识库检索1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI 嵌入模型1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "知识库检索1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "验证问答输入1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "知识问答 Webhook1": {
+      "main": [
+        [
+          {
+            "node": "验证问答输入1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "格式化问答输出1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent3": {
+      "main": [
+        [
+          {
+            "node": "格式化灵感分析结果1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude 灵感分析1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive 趋势搜索1": {
+      "main": [
+        [
+          {
+            "node": "格式化灵感分析结果1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "验证灵感输入1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Drive 趋势搜索1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "灵感收集 Webhook1": {
+      "main": [
+        [
+          {
+            "node": "验证灵感输入1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "格式化灵感分析结果1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "打版帮助Webhook": {
+      "main": [
+        [
+          {
+            "node": "验证打版输入",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "验证打版输入": {
+      "main": [
+        [
+          {
+            "node": "生成图片分析",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent 打版分析": {
+      "main": [
+        [
+          {
+            "node": "格式化打版分析结果",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude 打版分析": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent 打版分析",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "格式化打版分析结果": {
+      "main": [
+        [
+          {
+            "node": "返回结果1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成图片分析": {
+      "main": [
+        [
+          {
+            "node": "AI Agent 打版分析",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "25bc7cc4-b7be-4fcc-b733-c820ba5bcce6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5cb72472896fce0666bc03ef84936c4f09ec11e6b4f95f9aebe3d538947c7935"
+  },
+  "id": "S7Cesgno5n7plBUz",
+  "tags": []
+}

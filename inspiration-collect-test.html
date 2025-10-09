@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵感收集分析 API 测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #F5E6E8, #F9F1F2);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .test-container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .title {
+            font-size: 28px;
+            color: #2D1B1D;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .url-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            border-left: 4px solid #F5E6E8;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2D1B1D;
+        }
+        
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E8D1D5;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #F5E6E8;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #F5E6E8, #E8D1D5);
+            color: #2D1B1D;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 230, 232, 0.4);
+        }
+        
+        .test-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result-area {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            border: 1px solid #E8D1D5;
+        }
+        
+        .status-success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .status-error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .status-info {
+            color: #17a2b8;
+            font-weight: bold;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #F5E6E8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="title">灵感收集分析 API 测试</h1>
+        
+        <div class="url-display">
+            <strong>API URL:</strong><br>
+            https://lynn-cafa-system.app.n8n.cloud/webhook/api/inspiration-collect
+        </div>
+        
+        <div class="input-group">
+            <label for="inspiration-text">灵感描述:</label>
+            <textarea id="inspiration-text" rows="4" placeholder="请输入您的灵感描述...">A modern minimalist dress design with sustainable materials, featuring clean lines and earthy tones.</textarea>
+        </div>
+        
+        <div class="input-group">
+            <label for="collection-name">收集名称:</label>
+            <input type="text" id="collection-name" placeholder="灵感收集名称..." value="Spring Collection 2024">
+        </div>
+        
+        <div class="input-group">
+            <label for="tags">标签 (用逗号分隔):</label>
+            <input type="text" id="tags" placeholder="例如: 简约, 可持续, 现代..." value="minimalist, sustainable, modern">
+        </div>
+        
+        <button class="test-button" onclick="testAPI()">
+            <span id="button-text">发送测试请求</span>
+            <span id="loading-icon" class="loading" style="display: none;"></span>
+        </button>
+        
+        <div class="result-area" id="result">
+            等待测试结果...
+            
+测试将验证以下内容:
+✓ URL 连接性
+✓ 响应状态码
+✓ 响应时间
+✓ 返回数据格式
+✓ 错误处理
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://lynn-cafa-system.app.n8n.cloud/webhook/api/inspiration-collect';
+        
+        async function testAPI() {
+            const button = document.querySelector('.test-button');
+            const buttonText = document.getElementById('button-text');
+            const loadingIcon = document.getElementById('loading-icon');
+            const resultArea = document.getElementById('result');
+            
+            // 获取输入值
+            const inspirationText = document.getElementById('inspiration-text').value.trim();
+            const collectionName = document.getElementById('collection-name').value.trim();
+            const tags = document.getElementById('tags').value.trim();
+            
+            // 禁用按钮，显示加载状态
+            button.disabled = true;
+            buttonText.style.display = 'none';
+            loadingIcon.style.display = 'inline-block';
+            
+            // 开始测试
+            const startTime = Date.now();
+            let result = '';
+            
+            result += `🚀 开始测试 API...\n`;
+            result += `📅 时间: ${new Date().toLocaleString()}\n`;
+            result += `🔗 URL: ${API_URL}\n\n`;
+            
+            try {
+                // 准备请求数据
+                const requestBody = {
+                    inspiration: inspirationText || "Test inspiration content",
+                    collection: collectionName || "Test Collection",
+                    tags: tags ? tags.split(',').map(tag => tag.trim()) : ["test", "api"],
+                    timestamp: new Date().toISOString()
+                };
+                
+                result += `📤 发送数据:\n${JSON.stringify(requestBody, null, 2)}\n\n`;
+                resultArea.textContent = result;
+                
+                // 发送请求
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                
+                result += `⏱️ 响应时间: ${responseTime}ms\n`;
+                result += `📊 状态码: ${response.status} ${response.statusText}\n`;
+                
+                // 获取响应头
+                result += `\n📋 响应头:\n`;
+                for (let [key, value] of response.headers.entries()) {
+                    result += `  ${key}: ${value}\n`;
+                }
+                
+                // 获取响应内容
+                const responseText = await response.text();
+                let responseData;
+                
+                try {
+                    responseData = JSON.parse(responseText);
+                    result += `\n✅ JSON 格式有效\n`;
+                } catch (e) {
+                    result += `\n⚠️ 响应不是有效的 JSON 格式\n`;
+                    responseData = responseText;
+                }
+                
+                result += `\n📥 响应内容:\n${typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData}\n`;
+                
+                // 状态检查
+                if (response.ok) {
+                    result += `\n✅ API 测试成功！\n`;
+                    result += `✓ 连接正常\n`;
+                    result += `✓ 状态码正常 (${response.status})\n`;
+                    result += `✓ 响应时间: ${responseTime}ms\n`;
+                    
+                    if (typeof responseData === 'object' && responseData !== null) {
+                        result += `✓ 返回有效 JSON 数据\n`;
+                        
+                        // 检查常见的响应字段
+                        if (responseData.success !== undefined) {
+                            result += `✓ 包含成功标识: ${responseData.success}\n`;
+                        }
+                        if (responseData.message) {
+                            result += `✓ 包含消息: ${responseData.message}\n`;
+                        }
+                        if (responseData.data) {
+                            result += `✓ 包含数据字段\n`;
+                        }
+                    }
+                } else {
+                    result += `\n❌ API 响应错误\n`;
+                    result += `❌ 状态码: ${response.status}\n`;
+                    result += `❌ 错误信息: ${response.statusText}\n`;
+                }
+                
+            } catch (error) {
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                
+                result += `\n❌ 请求失败\n`;
+                result += `⏱️ 超时时间: ${responseTime}ms\n`;
+                result += `❌ 错误类型: ${error.name}\n`;
+                result += `❌ 错误信息: ${error.message}\n`;
+                
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    result += `\n🔍 可能的问题:\n`;
+                    result += `  • CORS 跨域问题\n`;
+                    result += `  • 网络连接问题\n`;
+                    result += `  • URL 不可访问\n`;
+                    result += `  • 服务器未运行\n`;
+                }
+            }
+            
+            // 恢复按钮状态
+            button.disabled = false;
+            buttonText.style.display = 'inline';
+            loadingIcon.style.display = 'none';
+            
+            // 显示结果
+            resultArea.textContent = result;
+            
+            // 添加颜色标识
+            if (result.includes('✅ API 测试成功')) {
+                resultArea.style.borderLeft = '4px solid #28a745';
+            } else if (result.includes('❌')) {
+                resultArea.style.borderLeft = '4px solid #dc3545';
+            } else {
+                resultArea.style.borderLeft = '4px solid #17a2b8';
+            }
+        }
+        
+        // 页面加载完成后自动运行一次测试
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                console.log('灵感收集分析 API 测试页面已加载');
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
