@@ -587,13 +587,13 @@
                     // 当前页面，不需要导航
                     break;
                 case 'inspiration':
-                    window.location.href = '灵感来源.html';
+                    window.location.href = 'n8n的前端/灵感来源.html';
                     break;
                 case 'supplier':
-                    window.location.href = '供货商.html';
+                    window.location.href = 'n8n的前端/供货商.html';
                     break;
                 case 'account':
-                    window.location.href = '个人.html';
+                    window.location.href = 'n8n的前端/个人.html';
                     break;
             }
         }
@@ -601,12 +601,12 @@
         // 功能卡片导航
         function navigateToInspiration() {
             console.log('导航到灵感收集页面');
-            window.location.href = '灵感收集分析1.html';
+            window.location.href = 'n8n的前端/灵感收集分析1.html';
         }
 
         function navigateToAnalysis() {
             console.log('导航到服装分析页面');
-            window.location.href = '打版分析.html';
+            window.location.href = 'n8n的前端/打版分析.html';
         }
 
         // 添加触摸反馈和动画效果
@@ -674,7 +674,7 @@
                 
                 // 跳转到智能问答结果页面，并传递消息
                 const encodedMessage = encodeURIComponent(message);
-                window.location.href = `智能问答结果.html?question=${encodedMessage}`;
+                window.location.href = `n8n的前端/智能问答结果.html?question=${encodedMessage}`;
                 
                 input.value = '';
                 updateSendButtonState();
