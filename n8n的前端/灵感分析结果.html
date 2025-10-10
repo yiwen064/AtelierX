@@ -1534,25 +1534,23 @@
                 try {
                     const data = JSON.parse(decodeURIComponent(dataParam));
                     
-                    // 添加用户消息（不包含图片数据）
-                    addUserMessage(data.design || '');
-                    
-                    // 如果有图片，显示提示信息
+                    // 从localStorage获取图片数据
+                    let images = [];
                     if (data.hasImages && data.imageCount > 0) {
-                        const chatMessages = document.getElementById('chatMessages');
-                        const imageInfoDiv = document.createElement('div');
-                        imageInfoDiv.className = 'message user-message';
-                        imageInfoDiv.innerHTML = `
-                            <div class="message-avatar">
-                                <img src="设计图/我的头像.png" alt="User" class="user-avatar-img">
-                            </div>
-                            <div class="message-content">
-                                <div class="message-text">📷 Uploaded ${data.imageCount} image(s) for analysis</div>
-                                <div class="message-time">${getCurrentTime()}</div>
-                            </div>
-                        `;
-                        chatMessages.appendChild(imageInfoDiv);
+                        try {
+                            const storedImages = localStorage.getItem('inspirationAnalysisImages');
+                            if (storedImages) {
+                                images = JSON.parse(storedImages);
+                                // 清理localStorage中的数据
+                                localStorage.removeItem('inspirationAnalysisImages');
+                            }
+                        } catch (error) {
+                            console.error('Error loading images from localStorage:', error);
+                        }
                     }
+                    
+                    // 添加用户消息（包含图片）
+                    addUserMessage(data.design || '', images);
                     
                     // 发送到AI进行分析
                     setTimeout(() => {

@@ -877,11 +877,17 @@
                 sendButton.classList.add('clicked');
                 
                 try {
-                    // 准备数据 - 只传递文本描述，不传递图片数据
+                    // 将图片数据存储到localStorage
+                    if (uploadedImages.length > 0) {
+                        localStorage.setItem('patternAnalysisImages', JSON.stringify(uploadedImages));
+                    }
+                    
+                    // 准备数据 - 只传递文本描述和图片信息
                     const data = {
                         design: message,
                         hasImages: uploadedImages.length > 0,
-                        imageCount: uploadedImages.length
+                        imageCount: uploadedImages.length,
+                        timestamp: Date.now()
                     };
                     
                     // 将数据编码并跳转到结果页面
