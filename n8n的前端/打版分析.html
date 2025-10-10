@@ -877,10 +877,11 @@
                 sendButton.classList.add('clicked');
                 
                 try {
-                    // 准备数据
+                    // 准备数据 - 只传递文本描述，不传递图片数据
                     const data = {
                         design: message,
-                        images: uploadedImages
+                        hasImages: uploadedImages.length > 0,
+                        imageCount: uploadedImages.length
                     };
                     
                     // 将数据编码并跳转到结果页面
