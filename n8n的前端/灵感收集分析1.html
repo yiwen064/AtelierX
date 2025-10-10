@@ -714,7 +714,7 @@
                     </div>
                     <div class="upload-content" id="uploadContent">
                         <div class="upload-icon">
-                            <img src="设计图/添加icon.png" alt="Upload" class="plus-icon">
+                            <img src="设计图/添加Icon.png" alt="Upload" class="plus-icon">
                         </div>
                         <p class="upload-text">Upload Pictures</p>
                     </div>
@@ -777,7 +777,9 @@
                     window.location.href = '../index.html';
                     break;
                 case 'inspiration':
-                    window.location.href = '灵感收集分析1.html';
+                    setTimeout(() => {
+                        window.location.href = '灵感来源.html';
+                    }, 150);
                     break;
                 case 'supplier':
                     window.location.href = '供货商.html';
@@ -862,23 +864,31 @@
                 // 添加点击效果
                 sendButton.classList.add('clicked');
                 
-                // 准备数据
-                const data = {
-                    design: message,
-                    images: uploadedImages
-                };
-                
-                // 将数据编码并跳转到结果页面
-                const encodedData = encodeURIComponent(JSON.stringify(data));
-                
-                // 立即跳转到结果页面
-                window.location.href = `灵感分析结果.html?data=${encodedData}`;
-                
-                // 清空输入框和图片
-                input.value = '';
-                uploadedImages = [];
-                updateUploadDisplay();
-                updateSendButtonState();
+                try {
+                    // 准备数据
+                    const data = {
+                        design: message,
+                        images: uploadedImages
+                    };
+                    
+                    // 将数据编码并跳转到结果页面
+                    const encodedData = encodeURIComponent(JSON.stringify(data));
+                    
+                    // 立即跳转到结果页面
+                    window.location.href = `灵感分析结果.html?data=${encodedData}`;
+                    
+                    // 清空输入框和图片
+                    input.value = '';
+                    uploadedImages = [];
+                    updateUploadDisplay();
+                    updateSendButtonState();
+                } catch (error) {
+                    console.error('Error preparing data for inspiration collection:', error);
+                    alert('发送失败，请重试');
+                    sendButton.classList.remove('clicked');
+                }
+            } else {
+                alert('请输入设计描述或上传图片');
             }
         }
 
@@ -1033,7 +1043,7 @@
                 addMoreDiv.className = 'uploaded-image add-more-box';
                 addMoreDiv.innerHTML = `
                     <div class="add-more-content" onclick="triggerFileUpload()">
-                        <img src="设计图/添加icon.png" alt="Add more" class="add-more-icon">
+                        <img src="设计图/添加Icon.png" alt="Add more" class="add-more-icon">
                     </div>
                 `;
                 uploadedImagesContainer.appendChild(addMoreDiv);

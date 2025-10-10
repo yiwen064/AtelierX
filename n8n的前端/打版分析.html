@@ -720,7 +720,7 @@
                     </div>
                     <div class="upload-content" id="uploadContent">
                         <div class="upload-icon">
-                            <img src="设计图/添加icon.png" alt="Upload" class="plus-icon">
+                            <img src="设计图/添加Icon.png" alt="Upload" class="plus-icon">
                         </div>
                         <p class="upload-text">Upload Design Files</p>
                     </div>
@@ -783,8 +783,9 @@
                     window.location.href = '../index.html';
                     break;
                 case 'inspiration':
-                    // Navigation Inspiration feature not yet developed
-                    console.log('Inspiration feature not yet developed');
+                    setTimeout(() => {
+                        window.location.href = '灵感来源.html';
+                    }, 150);
                     break;
                 case 'supplier':
                     window.location.href = '供货商.html';
@@ -875,23 +876,31 @@
                 // 添加点击效果
                 sendButton.classList.add('clicked');
                 
-                // 准备数据
-                const data = {
-                    design: message,
-                    images: uploadedImages
-                };
-                
-                // 将数据编码并跳转到结果页面
-                const encodedData = encodeURIComponent(JSON.stringify(data));
-                
-                // 立即跳转到结果页面
-                window.location.href = `打版分析结果.html?data=${encodedData}`;
-                
-                // 清空输入框和图片
-                input.value = '';
-                uploadedImages = [];
-                updateUploadDisplay();
-                updateSendButtonState();
+                try {
+                    // 准备数据
+                    const data = {
+                        design: message,
+                        images: uploadedImages
+                    };
+                    
+                    // 将数据编码并跳转到结果页面
+                    const encodedData = encodeURIComponent(JSON.stringify(data));
+                    
+                    // 立即跳转到结果页面
+                    window.location.href = `打版分析结果.html?data=${encodedData}`;
+                    
+                    // 清空输入框和图片
+                    input.value = '';
+                    uploadedImages = [];
+                    updateUploadDisplay();
+                    updateSendButtonState();
+                } catch (error) {
+                    console.error('Error preparing data for pattern analysis:', error);
+                    alert('发送失败，请重试');
+                    sendButton.classList.remove('clicked');
+                }
+            } else {
+                alert('请输入设计描述或上传图片');
             }
         }
 
