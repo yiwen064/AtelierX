@@ -1,10 +1,10 @@
 # AtelierX - AI-Powered Fashion Design Platform
 
-## project brief
+## Project Brief
 
 AtelierX is an AI-driven fashion design platform based on n8n, integrating functions such as inspiration collection, pattern analysis, intelligent Q&A, and supplier management.
 
-## functional characteristics
+## Functional Characteristics
 
 - 🎨 **Inspiration collection and analysis** -AI-driven design inspiration collection and analysis
 - 📐 **Pattern analysis** - Intelligent Pattern Design Risk Assessment and Analysis
@@ -14,7 +14,7 @@ AtelierX is an AI-driven fashion design platform based on n8n, integrating funct
 
 ## Get Started Quickly
 
-### Local testing
+### Local Testing
 
 1. Download the project to the local machine.
 2. Open `n8n's front-end/homepage.html` directly in the browser.
@@ -25,14 +25,14 @@ AtelierX is an AI-driven fashion design platform based on n8n, integrating funct
    # Then visit http://localhost:8000/n8n的前端/主页.html
    ```
 
-### on-line testing
+### On-line Testing
 
 The project has been deployed to the following platforms and can be directly tested online:
 
 - **GitHub Pages**: https://yiwen064.github.io/AtelierX/
 - **Netlify**: https://atelierx-demo.netlify.app/
 
-## project structure
+## Project Structure
 
 ```
 AtelierX/
@@ -47,20 +47,20 @@ AtelierX/
 └── README.md           # Project description
 ```
 
-## Technical stack
+## Technical Stack
 
 - HTML5 + CSS3 + JavaScript
 - n8n workflow engine
 - Responsive design
 - AI integration
 
-## test specification
+## Test Specification
 
 1. **Functionality Testing**: Click on each page link to test page navigation.
 2. **Responsive Testing**: Resize the browser window to test mobile device compatibility.
 3. **Interaction Testing**: Test form submissions, button clicks, and other interactive functions.
 
-## contact information
+## Contact Information
 
 - GitHub: [yiwen064](https://github.com/yiwen064)
 -  https://github.com/yiwen064/AtelierX
