@@ -25,14 +25,14 @@ AtelierX is an AI-driven fashion design platform based on n8n, integrating funct
    # Then visit http://localhost:8000/n8n的前端/主页.html
    ```
 
-### 在线测试
+### on-line testing
 
 The project has been deployed to the following platforms and can be directly tested online:
 
 - **GitHub Pages**: https://yiwen064.github.io/AtelierX/
 - **Netlify**: https://atelierx-demo.netlify.app/
 
-## 项目结构
+## project structure
 
 ```
 AtelierX/
